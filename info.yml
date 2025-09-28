@@ -1,7 +1,7 @@
 project:
   name: 'ISII-2526-GrupoB-COWTEAM'
   owner: 'GrupoB'
-  teamId: 'COWTEAM' 
+  teamId: 'COWTEAM'
   identities: {}
   notifications:
     email: 'ana.rodriguez24@alu.uclm.es,jaime.rodriguez7@alu.uclm.es,carlos.sanchez68@alu.uclm.es,pablo.sanchez29@alu.uclm.es'
