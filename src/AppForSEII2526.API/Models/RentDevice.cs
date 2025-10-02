@@ -12,28 +12,26 @@
             Rent = rent;
             RentalId = rent.Id;
         }
-        public RentDevice(Device device, Rental rent, int quantity, double price) : this(device, rent)
+        public RentDevice(Device device, Rental rent, int quantity) : this(device, rent)
         {
             Quantity = quantity;
-            Price = price;
+            Price = device.PriceForRent;
         }
-        public RentDevice(int deviceId, Rental rent, int quantity, double price)
+        public RentDevice(int deviceId, Rental rent, double price)
         {
             DeviceId = deviceId;
             Rent = rent;
-            Quantity = quantity;
             Price = price;
         }
-        public RentDevice(int deviceId, int rentalId, int quantity, double price) : this(deviceId, null, quantity, price)
-        {
-            RentalId = rentalId;
-        }
-        // Relación con Device
+        public RentDevice(int deviceId, Rental rent , int quantity, double price) : this(deviceId,rent, price) => Quantity = quantity;
+       
+
         public Device Device { get; set; }
         public int DeviceId { get; set; }
+
+        [StringLength(100, ErrorMessage = "Tienes que seleccionar al menos un dispositivo")]
         public int Quantity { get; set; }
 
-        // Relación con Rental
         public Rental Rent { get; set; }
         public int RentalId { get; set; }
         public double Price { get; set; }
