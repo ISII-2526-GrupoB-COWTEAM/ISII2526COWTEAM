@@ -4,7 +4,7 @@
     public class PurchaseItem
     {
         public PurchaseItem(){}
-    public PurchaseItem(Device device, int quantity, Purchase purchase)
+    public PurchaseItem(Device device, int quantity, Purchase purchase, string? description)
         {
             Device = device;
             DeviceId = device.Id;
@@ -12,13 +12,14 @@
             PurchaseId = purchase.Id;
             Price = device.PriceForPurchase;
             Quantity = quantity;
+            Description = description;
         }
         public Device Device { get; set; }
 
         public int DeviceId { get; set; }
 
         public Purchase Purchase { get; set; }
-
+        public string? Description { get; set; }
         public int PurchaseId { get; set; }
 
         [Precision(10, 2)]
