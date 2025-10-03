@@ -58,4 +58,4 @@
         public PaymentMethodTypes PaymentMethod { get; set; }
     }
 }
-}
+
