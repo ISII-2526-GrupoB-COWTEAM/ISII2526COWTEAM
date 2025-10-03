@@ -73,5 +73,6 @@
 
         // Relación con ReviewItems (un Device puede tener varios ReviewItems)
         public IList<ReviewItem> ReviewItems { get; set; } = new List<ReviewItem>();
+        public IList<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
     }
 }
