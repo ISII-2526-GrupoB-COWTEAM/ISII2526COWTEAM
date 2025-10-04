@@ -8,13 +8,19 @@
         {
         }
 
-        public Review(/*ApplicationUser applicationUser,*/ int customerId, DateTime dateOfReview, int rating, string reviewTitle, IList<ReviewItem> reviewItems)
+        public Review(/*ApplicationUser applicationUser,*/ int customerId, DateTime dateOfReview, int overallRating, string reviewTitle, IList<ReviewItem> reviewItems)
         {
             //Preguntar en tutorias, entiendo que el customerId en verdad es el id de applicationUser
             //ApplicationUser = applicationUser;
 
             CustomerId = customerId;
-            Rating = rating;
+
+            //Preguntar en tutorias, que es este atributo? se recibe por parametro o es calculado?
+            OverallRating = (reviewItems != null && reviewItems.Count > 0)
+                ? (int)reviewItems.Average(ri => ri.Rating)
+                : overallRating;
+
+
             DateOfReview = dateOfReview;
             ReviewTitle = reviewTitle;
             ReviewItems = reviewItems ?? new List<ReviewItem>(); 
@@ -37,7 +43,7 @@
         public DateTime DateOfReview { get; set; }
 
         [Range(1, 5, ErrorMessage = "Overall rating must be between 1 and 5")]
-        public int Rating { get; set; }
+        public int OverallRating { get; set; }
 
         [StringLength(100, ErrorMessage = "Review title cannot be longer than 100 characters.")]
         public string ReviewTitle { get; set; }
