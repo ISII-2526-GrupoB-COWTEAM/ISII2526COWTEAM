@@ -5,7 +5,7 @@
         public Rental()
         {
         }
-        public Rental(int id, string deliveryAddress, string name, PaymentMethodTypes paymentMethod, DateTime rentalDate, DateTime rentalDateFrom, DateTime rentalDateTo, string surname, IList<RentDevice> RentDevices)
+        public Rental(string deliveryAddress, string name, PaymentMethodTypes paymentMethod, ApplicationUser applicationUser, DateTime rentalDate, DateTime rentalDateFrom, DateTime rentalDateTo, string surname, IList<RentDevice> RentDevices)
         {
             TotalPrice = RentDevices.Sum(ri => ri.Price * (rentalDateTo - rentalDateFrom).Days);
 
@@ -17,6 +17,8 @@
             Name = name;
             Surname = surname;
             DeliveryAddress = deliveryAddress;
+            ApplicationUser = applicationUser;
+            PaymentMethod = paymentMethod;
 
         }
 
@@ -38,6 +40,7 @@
         public PaymentMethodTypes PaymentMethod { get; set; }
 
         public IList<RentDevice> RentDevices { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
     }
     public enum PaymentMethodTypes
     {
