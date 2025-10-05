@@ -4,41 +4,39 @@
 
     public class Review
     {
-        //Falta implementar el atributo CustomerCount... que aparece truncado
-        //En la imagen del diagrama de clases para este caso de uso.
         public Review()
         {
         }
 
-        public Review(int customerId, DateTime dateOfReview, int overallRating, string reviewTitle, IList<ReviewItem> reviewItems)
+        public Review(/*ApplicationUser applicationUser,*/ int customerId, DateTime dateOfReview, int overallRating, string reviewTitle, IList<ReviewItem> reviewItems)
         {
-            //CustomerCount...
+            //Preguntar en tutorias, entiendo que el customerId en verdad es el id de applicationUser
+            //ApplicationUser = applicationUser;
+
             CustomerId = customerId;
+
+            //Preguntar en tutorias, que es este atributo? se recibe por parametro o es calculado?
             OverallRating = (reviewItems != null && reviewItems.Count > 0)
                 ? (int)reviewItems.Average(ri => ri.Rating)
                 : overallRating;
 
-            DateOfReview = dateOfReview;
-            ReviewTitle = reviewTitle;
-            ReviewItems = reviewItems ?? new List<ReviewItem>();
-        }
 
-        public Review(int customerId, DateTime dateOfReview, int overallRating, string reviewTitle)
-        {
-            //CustomerCount...
-            CustomerId = customerId;
-            OverallRating = overallRating;
             DateOfReview = dateOfReview;
             ReviewTitle = reviewTitle;
-            ReviewItems = new List<ReviewItem>();
+            ReviewItems = reviewItems ?? new List<ReviewItem>(); 
+            
+            //Preguntar en tutorias
+            /*ReviewItems = reviewItems != null 
+                ? new List<ReviewItem>(reviewItems)
+                : new List<ReviewItem>();
+            */
         }
 
         public int ReviewId { get; set; }
 
-        //Restriccion
-        //public ??? CustomerCount... { get; set; }
-
+        //Preguntar tutorias, creo que tienen la misma funcion
         public int CustomerId { get; set; }
+        //public ApplicationUser ApplicationUser { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name = "Date Of Review")]
