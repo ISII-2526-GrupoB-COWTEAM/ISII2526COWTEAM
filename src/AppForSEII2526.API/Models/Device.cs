@@ -73,5 +73,7 @@
 
         // Relación con ReviewItems (un Device puede tener varios ReviewItems)
         public IList<ReviewItem> ReviewItems { get; set; } = new List<ReviewItem>();
+        // Relación con RentDevices (un Device puede estar en varios RentDevices)
+        public IList<RentDevice> RentDevices { get; set; } = new List<RentDevice>();
     }
 }
