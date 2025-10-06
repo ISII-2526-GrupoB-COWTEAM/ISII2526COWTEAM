@@ -7,6 +7,18 @@
             PurchaseItems = new List<PurchaseItem>();
         }
 
+        public Purchase(int id, double totalPrice, DateTime purchaseDate, string deliveryAddress, string customerUserName, string customerUserSurname, IList<PurchaseItem> purchaseItems, PaymentMethodTypes paymentMethod)
+        {
+            Id = id;
+            TotalPrice = totalPrice;
+            PurchaseDate = purchaseDate;
+            DeliveryAddress = deliveryAddress;
+            CustomerUserName = customerUserName;
+            CustomerUserSurname = customerUserSurname;
+            PurchaseItems = purchaseItems;
+            PaymentMethod = paymentMethod;
+        }
+
         public int Id { get; set; }
 
         
