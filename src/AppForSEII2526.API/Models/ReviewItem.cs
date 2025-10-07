@@ -1,6 +1,7 @@
 ﻿namespace AppForSEII2526.API.Models
 {
     using System.ComponentModel.DataAnnotations;
+    [PrimaryKey(nameof(DeviceId), nameof(ReviewId))]
 
     public class ReviewItem
     {
