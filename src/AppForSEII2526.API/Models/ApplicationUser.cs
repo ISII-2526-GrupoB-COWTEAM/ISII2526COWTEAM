@@ -38,4 +38,6 @@ public class ApplicationUser : IdentityUser
 
     public IList<Receipt> Receipts { get; set; } = new List<Receipt>();
 
+    public IList<Rental> Rentals { get; set; } = new List<Rental>();
+
 }
