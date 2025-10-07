@@ -2,10 +2,21 @@
 {
     public class Purchase
     {
-        public Purchase(ApplicationUser applicationUser)
+        
+        public Purchase()
         {
             PurchaseItems = new List<PurchaseItem>();
+        }
+
+        public Purchase(ApplicationUser applicationUser, string deliveryAddress, DateTime purchaseDate, IList<PurchaseItem> purchaseItems, PaymentMethodTypes paymentMethod)
+        {
+            TotalPrice = decimal.Round(purchaseItems.Sum(pi => pi.Price * pi.Quantity), 2);
+
             ApplicationUser = applicationUser;
+            DeliveryAddress = deliveryAddress;
+            PurchaseDate = purchaseDate;
+            PurchaseItems = purchaseItems;
+            PaymentMethod = paymentMethod;
         }
 
         public Purchase(int purchaseId, ApplicationUser applicationUser, string deliveryAddress,
