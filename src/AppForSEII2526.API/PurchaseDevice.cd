@@ -1,9 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="AppForSEII2526.API.Models.Device">
-    <Position X="1.75" Y="3.5" Width="1.5" />
+  <Class Name="AppForSEII2526.API.Models.ApplicationUser">
+    <Position X="9.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAQCBABgAABAAQAAAAQAAAAgAAAAAAgAgBABAAA=</HashCode>
+      <HashCode>AAQAAEAAAAAAAACAAAAAAAQABAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ApplicationUser.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Purchases" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="AppForSEII2526.API.Models.Model">
+    <Position X="0.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAABAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Model.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Devices" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="AppForSEII2526.API.Models.Device">
+    <Position X="0.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAQCBABgAABAAQAAAAQAAAAgAAAAAAgAhBABAAA=</HashCode>
       <FileName>Models\Device.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -13,18 +33,8 @@
       <Property Name="PurchaseItems" />
     </ShowAsCollectionAssociation>
   </Class>
-  <Class Name="AppForSEII2526.API.Models.Model">
-    <Position X="1" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAABAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Model.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Property Name="Devices" />
-    </ShowAsCollectionAssociation>
-  </Class>
   <Class Name="AppForSEII2526.API.Models.PurchaseItem">
-    <Position X="6" Y="3.25" Width="1.5" />
+    <Position X="3.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAABQAgAgAAgAAAAAAAAAAAAIAAEAAAgAAAAAA=</HashCode>
       <FileName>Models\PurchaseItem.cs</FileName>
@@ -35,11 +45,14 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="AppForSEII2526.API.Models.Purchase">
-    <Position X="10" Y="0.5" Width="1.5" />
+    <Position X="6.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAHAAAAAABAAAAQAKAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAADAAAAAABAAAAQAKAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Purchase.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ApplicationUser" />
+    </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="PurchaseItems" />
     </ShowAsCollectionAssociation>
