@@ -31,9 +31,11 @@
         public Review Review { get; set; }
         public int ReviewId { get; set; }
 
+        [Required]
         [StringLength(250, ErrorMessage = "Comments cannot exceed 250 characters.")]
         public string Comments { get; set; }
 
+        [Required]
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5")]
         public int Rating { get; set; }
     }
