@@ -23,6 +23,8 @@
         }
 
         public int ReviewId { get; set; }
+
+        [Required]
         public ApplicationUser ApplicationUser { get; set; }
 
         [DataType(DataType.Date)]
