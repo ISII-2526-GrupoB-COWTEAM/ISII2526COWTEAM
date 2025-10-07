@@ -2,14 +2,26 @@
 {
     public class Purchase
     {
+        
         public Purchase()
         {
             PurchaseItems = new List<PurchaseItem>();
         }
 
-        public Purchase(int purchaseId, string username, string customerNameSurname, ApplicationUser applicationUser, string deliveryAddress,
+        public Purchase(ApplicationUser applicationUser, string deliveryAddress, DateTime purchaseDate, IList<PurchaseItem> purchaseItems, PaymentMethodTypes paymentMethod)
+        {
+            TotalPrice = decimal.Round(purchaseItems.Sum(pi => pi.Price * pi.Quantity), 2);
+
+            ApplicationUser = applicationUser;
+            DeliveryAddress = deliveryAddress;
+            PurchaseDate = purchaseDate;
+            PurchaseItems = purchaseItems;
+            PaymentMethod = paymentMethod;
+        }
+
+        public Purchase(int purchaseId, ApplicationUser applicationUser, string deliveryAddress,
             DateTime purchaseDate, IList<PurchaseItem> purchaseItems, PaymentMethodTypes paymentMethod) :
-            this(username, customerNameSurname, applicationUser, deliveryAddress, purchaseDate, purchaseItems, paymentMethod)
+            this( applicationUser, deliveryAddress, purchaseDate, purchaseItems, paymentMethod)
         {
             Id = purchaseId;
 
@@ -24,21 +36,9 @@
             PurchaseDate = purchaseDate;
             DeliveryAddress = deliveryAddress;
             PurchaseItems = purchaseItems;
-            CustomerNameSurname = customerNameSurname;
-            CustomerUserName = username;
             ApplicationUser = applicationUser;
             PaymentMethod = paymentMethod;
-            CustomerNameSurname = customerNameSurname;
-        public Purchase(int id, double totalPrice, DateTime purchaseDate, string deliveryAddress, string customerUserName, string customerUserSurname, IList<PurchaseItem> purchaseItems, PaymentMethodTypes paymentMethod)
-        {
-            Id = id;
-            TotalPrice = totalPrice;
-            PurchaseDate = purchaseDate;
-            DeliveryAddress = deliveryAddress;
-            CustomerUserName = customerUserName;
-            CustomerUserSurname = customerUserSurname;
-            PurchaseItems = purchaseItems;
-            PaymentMethod = paymentMethod;
+            
         }
 
         public int Id { get; set; }
@@ -55,36 +55,10 @@
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please, set your address for delivery")]
         public string DeliveryAddress { get; set; }
 
-        public string CustomerUserName { get; set; }
-
-        public string CustomerNameSurname { get; set; }
-
         public ApplicationUser ApplicationUser { get; set; }
-        public string CustomerUserSurname { get; set; }
-
         public IList<PurchaseItem> PurchaseItems { get; set; }
-
-
         [Display(Name = "Payment Method")]
         public PaymentMethodTypes PaymentMethod { get; set; }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is Purchase purchase &&
-                   Id == purchase.Id &&
-                   TotalPrice == purchase.TotalPrice &&
-                   PurchaseDate == purchase.PurchaseDate &&
-                   DeliveryAddress == purchase.DeliveryAddress &&
-                   CustomerUserName == purchase.CustomerUserName &&
-                   CustomerUserSurname == purchase.CustomerUserSurname &&
-                   EqualityComparer<IList<PurchaseItem>>.Default.Equals(PurchaseItems, purchase.PurchaseItems) &&
-                   PaymentMethod == purchase.PaymentMethod;
-        }
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Id, TotalPrice, PurchaseDate, DeliveryAddress, CustomerUserName, CustomerUserSurname, PurchaseItems, PaymentMethod);
-        }
-
     }
 }
 
