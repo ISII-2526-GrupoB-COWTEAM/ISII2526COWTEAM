@@ -11,8 +11,6 @@
         public Review(ApplicationUser applicationUser, DateTime dateOfReview, string reviewTitle, IList<ReviewItem> reviewItems)
         {
             ApplicationUser = applicationUser;
-
-            //Preguntar en tutorias, que es este atributo? se recibe por parametro o es calculado?
             OverallRating = (reviewItems != null && reviewItems.Count > 0)
                 ? (int)reviewItems.Average(ri => ri.Rating)
                 : 0;
@@ -33,6 +31,7 @@
 
         public int OverallRating { get; set; }
 
+        [Required]
         [StringLength(100, ErrorMessage = "Review title cannot be longer than 100 characters.")]
         public string ReviewTitle { get; set; }
 
