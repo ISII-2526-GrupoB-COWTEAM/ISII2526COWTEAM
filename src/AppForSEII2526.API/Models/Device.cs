@@ -75,5 +75,6 @@
         public IList<ReviewItem> ReviewItems { get; set; } = new List<ReviewItem>();
         // Relación con RentDevices (un Device puede estar en varios RentDevices)
         public IList<RentDevice> RentDevices { get; set; } = new List<RentDevice>();
+        public IList<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
     }
 }
