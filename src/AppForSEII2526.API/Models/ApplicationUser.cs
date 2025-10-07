@@ -5,7 +5,8 @@ using System.ComponentModel.DataAnnotations;
 namespace AppForSEII2526.API.Models;
 
 // Add profile data for application users by adding properties to the ApplicationUser class
-public class ApplicationUser : IdentityUser {
+public class ApplicationUser : IdentityUser
+{
 
     public ApplicationUser()
     {
@@ -33,5 +34,6 @@ public class ApplicationUser : IdentityUser {
 
     // Relación con Review (un ApplicationUser puede tener varios Reviews)
     public IList<Review> Reviews { get; set; } = new List<Review>();
+    public IList<Purchase> Purchases { get; set; } = new List<Purchase>();
 
 }
