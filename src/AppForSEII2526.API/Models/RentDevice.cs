@@ -1,8 +1,10 @@
 ﻿namespace AppForSEII2526.API.Models
 {
+    [PrimaryKey(nameof(DeviceId), nameof(RentalId))]
+
     public class RentDevice
     {
-        public RentDevice()
+         public RentDevice()
         {
         }
         public RentDevice(Device device, Rental rent)
@@ -33,6 +35,7 @@
         public int Quantity { get; set; }
 
         public Rental Rent { get; set; }
+        
         public int RentalId { get; set; }
         public double Price { get; set; }
     }
