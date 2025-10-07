@@ -5,7 +5,7 @@
         public Rental()
         {
         }
-        public Rental(string deliveryAddress, string name, PaymentMethodTypes paymentMethod, ApplicationUser applicationUser, DateTime rentalDate, DateTime rentalDateFrom, DateTime rentalDateTo, string surname, IList<RentDevice> RentDevices)
+        public Rental(string deliveryAddress, PaymentMethodTypes paymentMethod, ApplicationUser applicationUser, DateTime rentalDate, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentDevice> RentDevices)
         {
             TotalPrice = RentDevices.Sum(ri => ri.Price * (rentalDateTo - rentalDateFrom).Days);
 
@@ -14,8 +14,6 @@
             RentalDateFrom = rentalDateFrom;
             RentalDateTo = rentalDateTo;
             RentDevices = RentDevices;
-            Name = name;
-            Surname = surname;
             DeliveryAddress = deliveryAddress;
             ApplicationUser = applicationUser;
             PaymentMethod = paymentMethod;
@@ -28,8 +26,7 @@
         public DateTime RentalDate { get; set; }
         public DateTime RentalDateFrom { get; set; }
         public DateTime RentalDateTo { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
+
 
         [DataType(System.ComponentModel.DataAnnotations.DataType.MultilineText)]
         [Display(Name = "Delivery Address")]
