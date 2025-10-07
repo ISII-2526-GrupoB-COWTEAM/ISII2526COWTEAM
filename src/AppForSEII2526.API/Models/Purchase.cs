@@ -29,6 +29,16 @@
             ApplicationUser = applicationUser;
             PaymentMethod = paymentMethod;
             CustomerNameSurname = customerNameSurname;
+        public Purchase(int id, double totalPrice, DateTime purchaseDate, string deliveryAddress, string customerUserName, string customerUserSurname, IList<PurchaseItem> purchaseItems, PaymentMethodTypes paymentMethod)
+        {
+            Id = id;
+            TotalPrice = totalPrice;
+            PurchaseDate = purchaseDate;
+            DeliveryAddress = deliveryAddress;
+            CustomerUserName = customerUserName;
+            CustomerUserSurname = customerUserSurname;
+            PurchaseItems = purchaseItems;
+            PaymentMethod = paymentMethod;
         }
 
         public int Id { get; set; }
@@ -50,12 +60,31 @@
         public string CustomerNameSurname { get; set; }
 
         public ApplicationUser ApplicationUser { get; set; }
+        public string CustomerUserSurname { get; set; }
 
         public IList<PurchaseItem> PurchaseItems { get; set; }
 
 
         [Display(Name = "Payment Method")]
         public PaymentMethodTypes PaymentMethod { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is Purchase purchase &&
+                   Id == purchase.Id &&
+                   TotalPrice == purchase.TotalPrice &&
+                   PurchaseDate == purchase.PurchaseDate &&
+                   DeliveryAddress == purchase.DeliveryAddress &&
+                   CustomerUserName == purchase.CustomerUserName &&
+                   CustomerUserSurname == purchase.CustomerUserSurname &&
+                   EqualityComparer<IList<PurchaseItem>>.Default.Equals(PurchaseItems, purchase.PurchaseItems) &&
+                   PaymentMethod == purchase.PaymentMethod;
+        }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, TotalPrice, PurchaseDate, DeliveryAddress, CustomerUserName, CustomerUserSurname, PurchaseItems, PaymentMethod);
+        }
+
     }
 }
 

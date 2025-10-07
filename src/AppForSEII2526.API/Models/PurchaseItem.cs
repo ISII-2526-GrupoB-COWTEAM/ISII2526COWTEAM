@@ -1,5 +1,4 @@
-﻿
-namespace AppForSEII2526.API.Models
+﻿namespace AppForSEII2526.API.Models
 {
     [PrimaryKey(nameof(DeviceId), nameof(PurchaseId))]
     public class PurchaseItem
