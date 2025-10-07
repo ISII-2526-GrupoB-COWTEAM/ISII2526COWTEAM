@@ -33,6 +33,7 @@
         public int Quantity { get; set; }
 
         public Rental Rent { get; set; }
+        [Key]
         public int RentalId { get; set; }
         public double Price { get; set; }
     }
