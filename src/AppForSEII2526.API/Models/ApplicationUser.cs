@@ -36,4 +36,6 @@ public class ApplicationUser : IdentityUser
     public IList<Review> Reviews { get; set; } = new List<Review>();
     public IList<Purchase> Purchases { get; set; } = new List<Purchase>();
 
+    public IList<Receipt> Receipts { get; set; } = new List<Receipt>();
+
 }

@@ -1,5 +1,8 @@
 ﻿namespace AppForSEII2526.API.Models
 {
+
+    using System.ComponentModel.DataAnnotations;
+    [PrimaryKey(nameof(RepairID), nameof(ReceiptID))]
     public class ReceiptItem
     {
         public ReceiptItem() { }
@@ -18,7 +21,7 @@
 
 
 
-
+        [Required]
         public string Model { get; set; }
 
         //Relacion con Receipt
@@ -31,9 +34,3 @@
 
     }
 }
-
-
-
-//Model string
-//ReceiptID int
-//RepairID int
