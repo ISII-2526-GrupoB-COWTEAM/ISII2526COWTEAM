@@ -9,20 +9,22 @@ namespace AppForSEII2526.API.Models
         { 
         }
 
-        public Receipt(int Id, string CustomerNameSurname, IList<ReceiptItem> ReceiptItem, string DeliveryAddress,PaymentMethodTypes PaymentMethod, DateTime ReceiptDate, double TotalPrice)
+        public Receipt(int Id, ApplicationUser ApplicationUser, IList<ReceiptItem> ReceiptItem, string DeliveryAddress,PaymentMethodTypes PaymentMethod, DateTime ReceiptDate, double TotalPrice)
         {
             this.Id = Id;
-            this.CustomerNameSurname = CustomerNameSurname;
+            this.ApplicationUser = ApplicationUser;
             this.PaymentMethod = PaymentMethod;
             this.ReceiptDate = ReceiptDate;
             this.TotalPrice = TotalPrice;
             this.DeliveryAddress = DeliveryAddress;
-            this.ReceiptItems = ReceiptItem;
+            this.ReceiptItem = ReceiptItem != null
+               ? new List<ReceiptItem>(ReceiptItem)
+               : new List<ReceiptItem>();
         }
 
 
-
-        public string CustomerNameSurname { get; set; }
+        [Required]
+        public ApplicationUser ApplicationUser{ get; set; }
 
         [Display(Name = "Payment Method")]
         public PaymentMethodTypes PaymentMethod { get; set; }
@@ -32,12 +34,12 @@ namespace AppForSEII2526.API.Models
 
 
         [DataType(DataType.Date)]
-        [Display(Name = "Date Of Review")]
+        [Display(Name = "Date Of Repair")]
         public DateTime ReceiptDate { get; set; }
 
         public double TotalPrice { get; set; }
 
-        public IList<ReceiptItem> ReceiptItems { get; set; } = new List<ReceiptItem>();
+        public IList<ReceiptItem> ReceiptItem { get; set; } = new List<ReceiptItem>();
 
     }
 }
