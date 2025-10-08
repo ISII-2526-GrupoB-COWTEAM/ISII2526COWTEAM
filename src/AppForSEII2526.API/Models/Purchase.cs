@@ -27,7 +27,7 @@
 
         }
 
-        public Purchase(string username, string customerNameSurname, ApplicationUser applicationUser, string deliveryAddress, DateTime purchaseDate, IList<PurchaseItem> purchaseItems, PaymentMethodTypes paymentMethod)
+        public Purchase(string username, string customerNameSurname, ApplicationUser applicationUser, string deliveryAddress, DateTime purchaseDate, IList<PurchaseItem> purchaseItems, PaymentMethodTypes paymentMethod, int totalQuantity)
         {
 
             TotalPrice = decimal.Round(purchaseItems.Sum(pi => pi.Price * pi.Quantity), 2);
@@ -38,7 +38,7 @@
             PurchaseItems = purchaseItems;
             ApplicationUser = applicationUser;
             PaymentMethod = paymentMethod;
-            
+            TotalQuantity = totalQuantity;
         }
 
         public int Id { get; set; }
@@ -46,7 +46,7 @@
         [Precision(10, 2)]
         public decimal TotalPrice { get; set; }
 
-
+        public int TotalQuantity { get; set; } 
         public DateTime PurchaseDate { get; set; }
 
 
