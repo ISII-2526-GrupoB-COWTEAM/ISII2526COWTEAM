@@ -22,7 +22,7 @@
            
         }
 
-        public int ReviewId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public ApplicationUser ApplicationUser { get; set; }

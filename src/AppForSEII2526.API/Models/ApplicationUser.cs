@@ -19,7 +19,7 @@ public class ApplicationUser : IdentityUser
         Country = country;
     }
 
-    public int ApplicationUserId { get; set; }
+    public int Id { get; set; }
 
     //Puede que los Display no hagan falta, pero esten en el proyecto de ejemplo.
 
