@@ -14,7 +14,7 @@
             Device = device;
             DeviceId = device.Id;
             Review = review;
-            ReviewId = review.ReviewId;
+            ReviewId = review.Id;
         }
 
         public ReviewItem(Device device, Review review, string comments, int rating) : this(device, review)

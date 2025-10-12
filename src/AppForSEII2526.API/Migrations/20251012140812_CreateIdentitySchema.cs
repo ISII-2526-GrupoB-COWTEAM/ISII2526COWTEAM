@@ -30,7 +30,6 @@ namespace AppForSEII2526.API.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ApplicationUserId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -262,7 +261,7 @@ namespace AppForSEII2526.API.Migrations
                 name: "Review",
                 columns: table => new
                 {
-                    ReviewId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DateOfReview = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -271,7 +270,7 @@ namespace AppForSEII2526.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Review", x => x.ReviewId);
+                    table.PrimaryKey("PK_Review", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Review_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
@@ -406,7 +405,7 @@ namespace AppForSEII2526.API.Migrations
                         name: "FK_ReviewItem_Review_ReviewId",
                         column: x => x.ReviewId,
                         principalTable: "Review",
-                        principalColumn: "ReviewId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
