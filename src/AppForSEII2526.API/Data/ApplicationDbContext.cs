@@ -9,4 +9,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Repair> Repair { get; set; }
     public DbSet<Receipt> Receipt { get; set; }
     public DbSet<ReceiptItem> ReceiptItem { get; set; }
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+{
+    public DbSet<Device> Device { get; set; }
+    public DbSet<Model> Model { get; set; }
+    public DbSet<ReviewItem> ReviewItem { get; set; }
+    public DbSet<Review> Review { get; set; }
+
+    
 }
