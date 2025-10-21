@@ -23,7 +23,7 @@ namespace AppForSEII2526.API.Controllers
         public async Task<ActionResult> GetDevicesForReview(string? filtroBrand, int? filtroYear)
         {
             var devices = await _context.Device
-                .Where(d=> (d.Brand.Contains(filtroBrand) || filtroBrand == null) && (d.Year==filtroYear) || filtroYear == null)
+                .Where(d=> (d.Brand.Contains(filtroBrand) || filtroBrand == null) && (d.Year==filtroYear || filtroYear == null))
                 .Select(d=>new DeviceForReviewDTO(d.Id, d.Name, d.Brand, d.Color, d.Year, d.Model.NameModel))
                 .ToListAsync();
             return Ok(devices);
