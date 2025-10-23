@@ -15,4 +15,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ReviewItem> ReviewItem { get; set; }
     public DbSet<Review> Review { get; set; }
 
+    public DbSet<Rental> Rental { get; set; }
+    public DbSet<RentDevice> RentDevice { get; set; }
+
 }
