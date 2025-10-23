@@ -1,7 +1,9 @@
-﻿using AppForSEII2526.API.DTOs.DeviceDTO;
+﻿using AppForSEII2526.API.DTOs;
+using AppForSEII2526.API.DTOs.ReviewDTO;
 using AppForSEII2526.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -28,9 +30,15 @@ namespace AppForSEII2526.API.Controllers
                     .Include(r => r.ReviewItems)
                         .ThenInclude(ri => ri.Device)
                             .ThenInclude(device => device.Model)
-                .Select(d => new ReviewDetailDTO())
-
-            .FirstOrDefaultAsync();
+                .Select(r => new ReviewDetailDTO( r.Id, r.ApplicationUser.Name,
+                        r.ApplicationUser.Country,
+                        r.ReviewTitle, r.DateOfReview, 
+                        r.ReviewItems
+                        .Select(ri => new ReviewItemDTO(ri.Device.Id,
+                            ri.Device.Name, ri.Device.Model.NameModel, 
+                            ri.Device.Year, ri.Rating, 
+                            ri.Comments)).ToList<ReviewItemDTO>()))
+                .FirstOrDefaultAsync();
 
             if (review == null)
             {
