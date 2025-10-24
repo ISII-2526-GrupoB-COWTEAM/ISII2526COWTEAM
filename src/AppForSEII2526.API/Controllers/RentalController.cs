@@ -18,12 +18,12 @@ namespace AppForSEII2526.API.Controllers
         }
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(IList<DeviceForRentalDTO>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IList<RentalDeviceDTO>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult> GetDevicesForRental(string? filtroBrand, double? filtroPrice)
             {
             var devices = await _context.Device
                 .Where(d => (d.Brand.Contains(filtroBrand) || filtroBrand == null) && (d.PriceForRent <= filtroPrice || filtroPrice == null))
-                .Select(d => new DeviceForRentalDTO(d.Id, d.Name, d.Brand, d.Color, d.Year, d.Model.NameModel, d.PriceForRent))
+                .Select(d => new RentalDeviceDTO(d.Id, d.Name, d.Brand, d.Color, d.Year, d.Model.NameModel, d.PriceForRent))
                 .ToListAsync();
             return Ok(devices);
         }
