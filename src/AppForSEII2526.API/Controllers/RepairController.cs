@@ -22,7 +22,7 @@ namespace AppForSEII2526.API.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<RepairDTO>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult> GetRepairsDTO(string? NombreReparacion, string? NombreEscala)
+        public async Task<ActionResult> GetRepairs(string? NombreReparacion, string? NombreEscala)
         {
 
             var repairs = await _context.Repair
