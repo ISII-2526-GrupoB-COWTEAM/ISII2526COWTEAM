@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AppForSEII2526.API.DTOs.DeviceDTO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AppForSEII2526.API.DTOs;
 using AppForSEII2526.API.DTOs.PurchaseDTO;
@@ -21,6 +22,8 @@ namespace AppForSEII2526.API.Controllers
 
         [HttpGet]
         [Route("[action]")]
+        [ProducesResponseType(typeof(IList<DeviceForReviewDTO>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult> GetDevicesForReview(string? filtroBrand, int? filtroYear)
         [ProducesResponseType(typeof(IList<DeviceForPurchaseDTO>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDevicesForPurchase()
         {
@@ -29,9 +32,12 @@ namespace AppForSEII2526.API.Controllers
                 (
                     d.Id,d.Name,d.Color,d.PriceForPurchase, d.Model.NameModel,d.Brand
                 ))
+                .Where(d=> (d.Brand.Contains(filtroBrand) || filtroBrand == null) && (d.Year==filtroYear || filtroYear == null))
+                .Select(d=>new DeviceForReviewDTO(d.Id, d.Name, d.Brand, d.Color, d.Year, d.Model.NameModel))
                 .ToListAsync();
             return Ok(devices);
 
         }
+
     }
 }
