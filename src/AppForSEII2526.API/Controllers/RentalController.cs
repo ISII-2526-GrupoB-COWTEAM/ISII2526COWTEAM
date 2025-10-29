@@ -1,6 +1,9 @@
 ﻿using AppForSEII2526.API.DTOs.RentalDTO;
+using AppForSEII2526.API.DTOs.RentalDTOs;
+using AppForSEII2526.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -18,15 +21,33 @@ namespace AppForSEII2526.API.Controllers
         }
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(IList<RentalDeviceDTO>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult> GetDevicesForRental(string? filtroBrand, double? filtroPrice)
-            {
-            var devices = await _context.Device
-                .Where(d => (d.Brand.Contains(filtroBrand) || filtroBrand == null) && (d.PriceForRent <= filtroPrice || filtroPrice == null))
-                .Select(d => new RentalDeviceDTO(d.Id, d.Name, d.Brand, d.Color, d.Year, d.Model.NameModel, d.PriceForRent))
-                .ToListAsync();
-            return Ok(devices);
-        }
+        [ProducesResponseType(typeof(RentalForDetailDTO), (int)HttpStatusCode.OK]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult> GetRental(int id)
+        {
+                RentalForDetailDTO? rental = await _context.Rental
+                .Where(r => r.Id == id)
 
+                .Include(r => r.RentDevices)
+                .ThenInclude(rd => rd.Device)
+                .ThenInclude(device =>device.Model)
+
+                .Include(r => r.ApplicationUser)
+
+                .Select(r => new RentalForDetailDTO(r.Id, r.ApplicationUser.Surname,
+                r.DeliveryAddress, r.PaymentMethod, r.RentalDateFrom, r.RentalDateTo, r.RentalDate, r.TotalPrice,
+                        
+                        r.ApplicationUser.Name!,
+                        r.RentDevices.Select(rd => new RentalDeviceDTO(rd.Device.Id, rd.Device.Name, rd.Device.Brand, rd.Device.Color, rd.Device.Year, rd.Device.Model.NameModel, rd.Quantity)).ToList())
+                ).FirstOrDefaultAsync();
+                
+                if (rental == null)
+                {
+                    _logger.LogWarning("Rental with id {RentalId} not found.", id);
+                    return NotFound();
+                
+                }
+                return Ok(rental);
+        }
     }
 }
