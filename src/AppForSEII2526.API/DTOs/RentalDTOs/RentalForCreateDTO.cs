@@ -4,12 +4,13 @@ namespace AppForSEII2526.API.DTOs.RentalDTOs
 {
     public class RentalForCreateDTO
     {
-        public RentalForCreateDTO(string name, string surname, string deliveryAddress, PaymentMethodTypes paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentalDeviceDTO> rentalDevices)
+        public RentalForCreateDTO(string name, string surname, string deliveryAddress, PaymentMethodTypes paymentMethod,DateTime rentalDate, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentalDeviceDTO> rentalDevices)
         {
             Name = name ?? throw new ArgumentException(nameof(name));
             Surname = surname ?? throw new ArgumentException(nameof(surname));
             DeliveryAddress = deliveryAddress ?? throw new ArgumentException(nameof(deliveryAddress));
             PaymentMethod = paymentMethod;
+            RentalDate = rentalDate;
             RentalDateFrom = rentalDateFrom;
             RentalDateTo = rentalDateTo;
             RentalDevices = rentalDevices ?? throw new ArgumentException(nameof(rentalDevices));
@@ -25,6 +26,7 @@ namespace AppForSEII2526.API.DTOs.RentalDTOs
         }
 
         public IList<RentalDeviceDTO> RentalDevices { get; set; }
+        public DateTime RentalDate { get; set; }
         public DateTime RentalDateFrom { get; set; }
         public DateTime RentalDateTo { get; set; }
 
