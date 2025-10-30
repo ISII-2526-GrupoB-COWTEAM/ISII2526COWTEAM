@@ -1,9 +1,4 @@
-﻿using AppForSEII2526.API.DTOs.DeviceDTO;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using AppForSEII2526.API.DTOs;
-using AppForSEII2526.API.DTOs.DeviceDTO.PurchaseDTO;
-
+﻿using AppForSEII2526.API.DTOs.PurchaseDTO;
 
 namespace AppForSEII2526.API.Controllers
 {
