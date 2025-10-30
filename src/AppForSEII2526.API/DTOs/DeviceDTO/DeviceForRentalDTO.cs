@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace AppForSEII2526.API.DTOs.RentalDTO
+namespace AppForSEII2526.API.DTOs.DeviceDTO
 {
     public class DeviceForRentalDTO
     {
+
         public DeviceForRentalDTO(int id, string name, string brand, string color, int year, string model, double priceForRent)
         {
             Id = id;
@@ -15,21 +20,13 @@ namespace AppForSEII2526.API.DTOs.RentalDTO
             Model = model;
             PriceForRent = priceForRent;
         }
-        [Required]
         public int Id { get; set; }
-        [Required]
         public string Name { get; set; }
-        [Required]
         public string Brand { get; set; }
-        [Required]
         public string Color { get; set; }
-        [Required]
         public int Year { get; set; }
-        [Required]
+        
         public string Model { get; set; }
-        [Required]
         public double PriceForRent { get; set; }
-
-
     }
 }

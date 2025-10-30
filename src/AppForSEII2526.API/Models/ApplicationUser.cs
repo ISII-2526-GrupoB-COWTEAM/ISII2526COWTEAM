@@ -30,7 +30,7 @@ public class ApplicationUser : IdentityUser
     public string Surname { get; set; }
 
     [Display(Name = "Country")]
-    public string Country { get; set; }
+    public string? Country { get; set; }
 
     // Relación con Review (un ApplicationUser puede tener varios Reviews)
     public IList<Review> Reviews { get; set; } = new List<Review>();
