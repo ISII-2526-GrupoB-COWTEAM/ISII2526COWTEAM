@@ -18,5 +18,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Rental> Rental { get; set; }
     public DbSet<RentDevice> RentDevice { get; set; }
     public DbSet<ApplicationUser> ApplicationUser { get; set; }
-
-}
+    public DbSet<Purchase> Purchase { get; set; }
+    public DbSet<PurchaseItem> PurchaseItem { get; set; }
+    }
