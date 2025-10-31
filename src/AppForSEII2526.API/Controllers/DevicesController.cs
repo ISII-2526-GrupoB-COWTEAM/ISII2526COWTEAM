@@ -1,4 +1,5 @@
-﻿using AppForSEII2526.API.DTOs.PurchaseDTO;
+﻿using AppForSEII2526.API.DTOs.DeviceDTO;
+using AppForSEII2526.API.DTOs.PurchaseDTO;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -13,6 +14,30 @@ namespace AppForSEII2526.API.Controllers
         {
             _context = context;
             _logger = logger;
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(IList<DeviceForReviewDTO>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult> GetDevicesForReview(string? filtroBrand, int? filtroYear)
+        {
+            var devices = await _context.Device
+                .Where(d => (d.Brand.Contains(filtroBrand) || filtroBrand == null) && (d.Year == filtroYear || filtroYear == null))
+                .Select(d => new DeviceForReviewDTO(d.Id, d.Name, d.Brand, d.Color, d.Year, d.Model.NameModel))
+                .ToListAsync();
+            return Ok(devices);
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(IList<DeviceForRentalDTO>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult> GetDevicesForRental(string? filtroModel, double? filtroPrice)
+        {
+            var devices = await _context.Device
+                .Where(d => (d.Brand.Contains(filtroModel) || filtroModel == null) && (d.PriceForRent <= filtroPrice || filtroPrice == null))
+                .Select(d => new DeviceForRentalDTO(d.Id, d.Name, d.Brand, d.Color, d.Year, d.Model.NameModel, d.PriceForRent))
+                .ToListAsync();
+            return Ok(devices);
         }
 
         [HttpGet]
