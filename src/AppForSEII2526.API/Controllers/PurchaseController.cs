@@ -6,8 +6,7 @@ using System.Linq;
 
 namespace AppForSEII2526.API.Controllers
 {
-    public class PurchaseController : Controller
-    {
+    
         [Route("api/[controller]")]
         [ApiController]
         public class PurchasesController : ControllerBase
@@ -181,5 +180,5 @@ namespace AppForSEII2526.API.Controllers
             }
 
         }
-    }
+    
 }
