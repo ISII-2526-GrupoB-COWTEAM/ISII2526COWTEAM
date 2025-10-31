@@ -2,7 +2,7 @@
 {
     public class PurchaseDeviceDTO
     {
-        public PurchaseDeviceDTO(int deviceID, double purchasePrice, string brand, string model, int quantity)
+        public PurchaseDeviceDTO(int deviceID, decimal purchasePrice, string brand, string model, int quantity)
         {
             DeviceId = deviceID;
             PurchasePrice = purchasePrice;
@@ -16,7 +16,7 @@
 
         [Display(Name = "PurchasePrice")]
         [JsonPropertyName("PurchasePrice")]
-        public double PurchasePrice { get; set; }
+        public decimal PurchasePrice { get; set; }
 
         [JsonPropertyName("Brand")]
         public string Brand { get; set; }
