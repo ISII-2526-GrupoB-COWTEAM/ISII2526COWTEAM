@@ -14,10 +14,12 @@ namespace AppForSEII2526.API.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger<DevicesController> _logger;
 
+
         public RentalController(ApplicationDbContext context, ILogger<DevicesController> logger)
         {
             _context = context;
             _logger = logger;
+            _logger.LogInformation("TodoService initialized");
         }
         [HttpGet]
         [Route("[action]")]

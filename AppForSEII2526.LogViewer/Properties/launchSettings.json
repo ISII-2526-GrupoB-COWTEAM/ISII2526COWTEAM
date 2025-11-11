@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AppForSEII2526.LogViewer": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
