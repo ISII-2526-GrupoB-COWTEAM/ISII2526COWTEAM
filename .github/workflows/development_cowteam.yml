@@ -7,6 +7,9 @@ on:
   push:
     branches:
       - development
+    paths:
+      - 'src/AppForSEII2526.API**'
+      
   workflow_dispatch:
 
 jobs:
@@ -62,4 +65,5 @@ jobs:
           app-name: 'cowteam'
           slot-name: 'Production'
           package: .
+
           
