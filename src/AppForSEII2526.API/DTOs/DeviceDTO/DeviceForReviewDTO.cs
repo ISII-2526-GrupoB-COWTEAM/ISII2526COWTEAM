@@ -1,4 +1,5 @@
-﻿namespace AppForSEII2526.API.DTOs.DeviceDTO
+﻿
+namespace AppForSEII2526.API.DTOs.DeviceDTO
 {
     public class DeviceForReviewDTO
     {
@@ -25,5 +26,21 @@
         public int Year { get; set; }
         [Required]
         public string Model { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is DeviceForReviewDTO dTO &&
+                   Id == dTO.Id &&
+                   Name == dTO.Name &&
+                   Brand == dTO.Brand &&
+                   Color == dTO.Color &&
+                   Year == dTO.Year &&
+                   Model == dTO.Model;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Name, Brand, Color, Year, Model);
+        }
     }
 }

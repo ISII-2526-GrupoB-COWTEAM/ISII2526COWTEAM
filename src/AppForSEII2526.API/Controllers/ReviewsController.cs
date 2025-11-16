@@ -12,9 +12,9 @@ namespace AppForSEII2526.API.Controllers
     public class ReviewsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<DevicesController> _logger;
+        private readonly ILogger<ReviewsController> _logger;
 
-        public ReviewsController(ApplicationDbContext context, ILogger<DevicesController> logger)
+        public ReviewsController(ApplicationDbContext context, ILogger<ReviewsController> logger)
         {
             _context = context;
             _logger = logger;
@@ -146,9 +146,9 @@ namespace AppForSEII2526.API.Controllers
             // Creamos el DTO de salida
             var reviewDetail = new ReviewDetailDTO(
                 review.Id,
-                review.ReviewTitle,
-                review.ApplicationUser.Country,
                 review.ApplicationUser.Name,
+                review.ApplicationUser.Country,
+                review.ReviewTitle,
                 review.DateOfReview,
                 review.ReviewItems.Select(ri => new ReviewItemDTO(
                     ri.Device.Id,
