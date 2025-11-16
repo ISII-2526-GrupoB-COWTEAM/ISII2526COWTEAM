@@ -29,5 +29,20 @@ namespace AppForSEII2526.API.DTOs.ReviewDTO
         {
             get{return (int)ReviewItems.Average(ri => ri.Rating);}
         }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is ReviewForCreateDTO dTO &&
+                   ApplicationUserName == dTO.ApplicationUserName &&
+                   ApplicationUserCountry == dTO.ApplicationUserCountry &&
+                   ReviewTitle == dTO.ReviewTitle &&
+                   EqualityComparer<IList<ReviewItemDTO>>.Default.Equals(ReviewItems, dTO.ReviewItems) &&
+                   OverallRating == dTO.OverallRating;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ApplicationUserName, ApplicationUserCountry, ReviewTitle, ReviewItems, OverallRating);
+        }
     }
 }

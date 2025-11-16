@@ -1,4 +1,5 @@
-﻿namespace AppForSEII2526.API.DTOs.ReviewDTO
+﻿
+namespace AppForSEII2526.API.DTOs.ReviewDTO
 {
     public class ReviewItemDTO
     {
@@ -24,5 +25,21 @@
         public int Rating { get; set; }
         [Required]
         public string Comments { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is ReviewItemDTO dTO &&
+                   DeviceID == dTO.DeviceID &&
+                   Name == dTO.Name &&
+                   Model == dTO.Model &&
+                   Year == dTO.Year &&
+                   Rating == dTO.Rating &&
+                   Comments == dTO.Comments;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(DeviceID, Name, Model, Year, Rating, Comments);
+        }
     }
 }

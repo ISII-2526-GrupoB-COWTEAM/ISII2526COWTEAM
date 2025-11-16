@@ -1,4 +1,5 @@
-﻿namespace AppForSEII2526.API.DTOs.ReviewDTO
+﻿
+namespace AppForSEII2526.API.DTOs.ReviewDTO
 {
     public class ReviewDetailDTO : ReviewForCreateDTO
     {
@@ -12,7 +13,26 @@
             Id = id;
             ReviewDate = reviewDate;
         }
+
         public int Id { get; set; }
         public DateTime ReviewDate { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is ReviewDetailDTO dTO &&
+                   ApplicationUserName == dTO.ApplicationUserName &&
+                   ApplicationUserCountry == dTO.ApplicationUserCountry &&
+                   ReviewTitle == dTO.ReviewTitle &&
+                   ReviewItems.SequenceEqual(dTO.ReviewItems) &&
+                   OverallRating == dTO.OverallRating &&
+                   Id == dTO.Id &&
+                   ReviewDate == dTO.ReviewDate;
+        }
+
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ApplicationUserName, ApplicationUserCountry, ReviewTitle, ReviewItems, OverallRating, Id, ReviewDate);
+        }
     }
 }
