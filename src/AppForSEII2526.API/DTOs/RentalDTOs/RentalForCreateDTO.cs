@@ -36,7 +36,7 @@ namespace AppForSEII2526.API.DTOs.RentalDTOs
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please, set your address for delivery")]
         public string DeliveryAddress {get; set; }
 
-
+        [EmailAddress]
         [Required]
         public string Name { get; set; }
 

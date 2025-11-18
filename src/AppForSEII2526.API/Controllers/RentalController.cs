@@ -47,7 +47,7 @@ namespace AppForSEII2526.API.Controllers
                     )).ToList(),
                     r.PaymentMethod
                 ))
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(); 
 
             if (rental == null)
             {
@@ -62,24 +62,24 @@ namespace AppForSEII2526.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
         [ProducesResponseType(typeof(RentalForDetailDTO), (int)HttpStatusCode.Created)]
-        public async Task<ActionResult> CreateRental([FromBody] RentalForCreateDTO rentalForCreate)
+        public async Task<ActionResult> CreateRental(RentalForCreateDTO rentalForCreate)
         {
             //Validaciones iniciales
-            if (rentalForCreate.RentalDateFrom <= DateTime.Today)
+            if (rentalForCreate.RentalDateFrom <=DateTime.Today)
                 ModelState.AddModelError("RentalDateFrom", "Error! Your rental date must start later than today");
             if (rentalForCreate.RentalDateFrom >= rentalForCreate.RentalDateTo)
                 ModelState.AddModelError("RentalDateTo", "Error! The end date must be after the start date");
             if (rentalForCreate.RentalDevices.Count == 0)
                 ModelState.AddModelError("RentalDevices", "Error! You must rent at least one device");
 
-            var user = await _context.ApplicationUser.FirstOrDefaultAsync(u => u.Name == rentalForCreate.Name && u.Surname == rentalForCreate.Surname);
+            var user =await _context.ApplicationUser.FirstOrDefaultAsync(u => u.Name == rentalForCreate.Name && u.Surname == rentalForCreate.Surname);
             if (user == null)
                 ModelState.AddModelError("User", "Error! User not found");
 
             var deviceNames = rentalForCreate.RentalDevices.Select(rd => rd.Name).ToList();
 
 
-            var devices = _context.Device
+            var devices =  _context.Device
                 .Include(d => d.Model)
                 .Where(d => deviceNames.Contains(d.Name))
                 .ToList();
@@ -93,7 +93,7 @@ namespace AppForSEII2526.API.Controllers
                 rentalForCreate.RentalDateTo,
                 new List<RentDevice>());
 
-            foreach (var item in rentalForCreate.RentalDevices)
+           foreach(var item in rentalForCreate.RentalDevices)
             {
                 var device = devices.FirstOrDefault(d => d.Name == item.Name);
 
