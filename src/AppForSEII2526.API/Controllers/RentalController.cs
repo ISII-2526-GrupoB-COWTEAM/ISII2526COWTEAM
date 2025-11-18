@@ -62,7 +62,7 @@ namespace AppForSEII2526.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
         [ProducesResponseType(typeof(RentalForDetailDTO), (int)HttpStatusCode.Created)]
-        public async Task<ActionResult> CreateRental([FromBody]RentalForCreateDTO rentalForCreate)
+        public async Task<ActionResult> CreateRental(RentalForCreateDTO rentalForCreate)
         {
             //Validaciones iniciales
             if (rentalForCreate.RentalDateFrom <=DateTime.Today)
