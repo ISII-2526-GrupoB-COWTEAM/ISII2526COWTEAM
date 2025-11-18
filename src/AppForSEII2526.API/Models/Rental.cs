@@ -5,15 +5,15 @@
         public Rental()
         {
         }
-        public Rental(string deliveryAddress, PaymentMethodTypes paymentMethod, ApplicationUser applicationUser, DateTime rentalDate, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentDevice> RentDevices)
+        public Rental(string deliveryAddress, PaymentMethodTypes paymentMethod, ApplicationUser applicationUser, DateTime rentalDate, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentDevice> rentDevices)
         {
-            TotalPrice = RentDevices.Sum(ri => ri.Price * (rentalDateTo - rentalDateFrom).Days);
+            TotalPrice = rentDevices.Sum(ri => ri.Price * (rentalDateTo - rentalDateFrom).Days);
 
 
             RentalDate = rentalDate;
             RentalDateFrom = rentalDateFrom;
             RentalDateTo = rentalDateTo;
-            RentDevices = RentDevices;
+            RentDevices = rentDevices;
             DeliveryAddress = deliveryAddress;
             ApplicationUser = applicationUser;
             PaymentMethod = paymentMethod;
