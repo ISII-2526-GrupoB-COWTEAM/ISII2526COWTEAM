@@ -9,15 +9,12 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
         {
             Id = id;
             PurchaseDate = purchaseDate;
+            TotalPrice = totalPrice;
         }
         public int Id { get; set; }
 
         [JsonPropertyName("FechaCompra")]
         public DateTime PurchaseDate { get; set; }
-
-
-
-
 
     }
 }

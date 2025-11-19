@@ -1,4 +1,6 @@
-﻿namespace AppForSEII2526.API.DTOs.PurchaseDTO
+﻿using System.Drawing;
+
+namespace AppForSEII2526.API.DTOs.PurchaseDTO
 {
     public class PurchaseDeviceDTO
     {
@@ -10,19 +12,53 @@
             Model = model ?? throw new ArgumentNullException(nameof(model));
             Quantity = quantity;
         }
+        public PurchaseDeviceDTO(
+        int deviceID,
+        string name,
+        string brand,
+        string color,
+        int year,
+        string model,
+        decimal purchasePrice,
+        int quantity)
+        {
+            DeviceId = deviceID;
+            Name = name;
+            Brand = brand ?? throw new ArgumentNullException(nameof(brand));
+            Color = color;
+            Year = year;
+            Model = model ?? throw new ArgumentNullException(nameof(model));
+            PurchasePrice = purchasePrice;
+            Quantity = quantity;
+        }
 
-        [JsonPropertyName("DeviceId")]
+        [Required]
+        [JsonPropertyName("deviceID")]
         public int DeviceId { get; set; }
 
-        [Display(Name = "PurchasePrice")]
-        [JsonPropertyName("PurchasePrice")]
-        public decimal PurchasePrice { get; set; }
+        [Required]
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
 
-        [JsonPropertyName("Brand")]
+        [Required]
+        [JsonPropertyName("brand")]
         public string Brand { get; set; }
 
-        [JsonPropertyName("Model")]
+        [Required]
+        [JsonPropertyName("color")]
+        public string Color { get; set; }
+
+        [Required]
+        [JsonPropertyName("year")]
+        public int Year { get; set; }
+
+        [Required]
+        [JsonPropertyName("model")]
         public string Model { get; set; }
+
+        [Required]
+        [JsonPropertyName("purchasePrice")]
+        public decimal PurchasePrice { get; set; }
 
         [Required]
         [JsonPropertyName("Quantity")]
@@ -30,14 +66,6 @@
         [Range(1, double.MaxValue, ErrorMessage = "You must provide a valid quantity")]
         public int Quantity { get; set; }
 
-        public override bool Equals(object obj)
-        {
-            return obj is PurchaseDeviceDTO model &&
-                   DeviceId == model.DeviceId &&
-                   PurchasePrice == model.PurchasePrice &&
-                   Quantity == model.Quantity &&
-                   Brand == model.Brand &&
-                   Model == model.Model;
-        }
+        
     }
 }
