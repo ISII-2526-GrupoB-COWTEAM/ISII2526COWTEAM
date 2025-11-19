@@ -43,13 +43,41 @@ namespace AppForSEII2526.API.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<DeviceForPurchaseDTO>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetDevicesForPurchase()
+        public async Task<ActionResult<List<DeviceForPurchaseDTO>>> GetDevicesForPurchase(string? name, string? color)
         {
+            var query = _context.Device
+                .Include(d => d.Model)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
+                query = query.Where(d => d.Name.Contains(name));
+
+            if (!string.IsNullOrEmpty(color))
+                query = query.Where(d => d.Color == color);
+
             var devices = await _context.Device
+                .Include(d => d.Model)
+                .Where(d =>
+                    (string.IsNullOrEmpty(name) || d.Name.Contains(name)) &&
+                    (string.IsNullOrEmpty(color) || d.Color.Contains(color))
+                )
+                .OrderBy(d => d.Name)
+                .ThenBy(d => d.Brand)
                 .Select(d => new DeviceForPurchaseDTO
                 (
-                    d.Id, d.Name, d.Color, d.PriceForPurchase, d.Model.NameModel, d.Brand
+                    d.Id, d.Name, d.Color, (decimal)d.PriceForPurchase, d.Model.NameModel, d.Brand
                 )).ToListAsync();
+
+         /*   // Error filtro de color -> no hay resultados  
+            if (!string.IsNullOrEmpty(color) && !devices.Any())
+                return BadRequest("El color indicado no existe en el catálogo de dispositivos.");
+
+            // Error filtro de nombre -> no hay resultados 
+            if (!string.IsNullOrEmpty(name) && !devices.Any())
+                return BadRequest("No existe ningún dispositivo con ese nombre.");
+         */
+            // Si no hay filtros (name == null, color == null) y la tabla está vacía,
+            // devolveremos Ok([]) y tu test de tabla vacía lo comprobará.
             return Ok(devices);
 
         }

@@ -1,4 +1,4 @@
-﻿using AppForSEII2526.API.DTOs.RentalDTO;
+﻿
 
 namespace AppForSEII2526.API.DTOs.PurchaseDTO
 {
@@ -39,6 +39,8 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
 
         [Display(Name = "Total Price")]
         [JsonPropertyName("TotalPrice")]
-        public double TotalPrice{ get; set; }
+        public decimal TotalPrice{ get; set; }
+
+       
     }
 }
