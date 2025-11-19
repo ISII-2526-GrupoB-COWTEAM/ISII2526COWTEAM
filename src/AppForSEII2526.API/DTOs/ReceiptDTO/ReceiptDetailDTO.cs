@@ -23,5 +23,20 @@ namespace AppForSEII2526.API.DTOs.ReceiptDTO
         public double PrecioTotal(IList<ReceiptItemDTO> receiptItems) { 
             return receiptItems.Sum(ri => ri.Cost);
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not ReceiptDetailDTO other) return false;
+            return Id == other.Id
+                && ApplicationUserName == other.ApplicationUserName
+                && ApplicationUserSurname == other.ApplicationUserSurname
+                && DeliveryAddress == other.DeliveryAddress
+                && DateOfReceipt == other.DateOfReceipt
+                && TotalPrice == other.TotalPrice
+                && ReceiptItems.SequenceEqual(other.ReceiptItems);
+        }
+
+        public override int GetHashCode() => HashCode.Combine(Id, ApplicationUserName, ApplicationUserSurname, DeliveryAddress, DateOfReceipt, TotalPrice, ReceiptItems);
+
     }
 }

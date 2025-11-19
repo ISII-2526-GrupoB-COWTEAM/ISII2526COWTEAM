@@ -12,9 +12,9 @@ namespace AppForSEII2526.API.Controllers
     public class ReceiptController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<RepairController> _logger;
+        private readonly ILogger<ReceiptController> _logger;
         
-        public ReceiptController(ApplicationDbContext context, ILogger<RepairController> logger)
+        public ReceiptController(ApplicationDbContext context, ILogger<ReceiptController> logger)
         {
             _context = context;
             _logger = logger;
@@ -159,7 +159,7 @@ namespace AppForSEII2526.API.Controllers
                 receipt.ReceiptItem.Select(ri => new ReceiptItemDTO(
                     ri.Repair.Id,
                     ri.Repair.Name,
-                    ri.Repair.Scale?.Name ?? "Unknown", // 🔹 protección contra null
+                    ri.Repair.Scale?.Name ?? "Unknown", 
                     ri.Repair.Cost,
                     ri.Model
                 )).ToList()

@@ -28,5 +28,23 @@
             Cost = cost;
             Description = description;
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not RepairDTO other)
+                return false;
+
+            return Id == other.Id &&
+                   Name == other.Name &&
+                   Scale == other.Scale &&
+                   Cost == other.Cost &&
+                   Description == other.Description;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Name, Scale, Cost, Description);
+        }
+
     }
 }
