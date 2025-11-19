@@ -11,7 +11,27 @@ namespace AppForSEII2526.API.DTOs.RentalDTOs
             RentalDate = rentalDate;
         }
         public int Id { get; set; }
+        public DateTime RentalDate { get; set; }
 
-       
+        public override bool Equals(object? obj)
+        {
+            return obj is RentalForDetailDTO dTO &&
+                   Name == dTO.Name &&
+                    Surname == dTO.Surname &&
+                        DeliveryAddress == dTO.DeliveryAddress &&
+                           PaymentMethod == dTO.PaymentMethod &&
+                              RentalDate == dTO.RentalDate &&
+                                 RentalDateFrom == dTO.RentalDateFrom &&
+                                    RentalDateTo == dTO.RentalDateTo &&
+                                      Id == dTO.Id;
+
+
+        }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Name, Surname, DeliveryAddress, PaymentMethod, RentalDate, RentalDateFrom, RentalDateTo);
+        }
+
+
     }
 }
