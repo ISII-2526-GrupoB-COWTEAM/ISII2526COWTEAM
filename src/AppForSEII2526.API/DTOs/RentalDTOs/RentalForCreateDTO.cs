@@ -36,7 +36,7 @@ namespace AppForSEII2526.API.DTOs.RentalDTOs
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please, set your address for delivery")]
         public string DeliveryAddress {get; set; }
 
-        [EmailAddress]
+        
         [Required]
         public string Name { get; set; }
 
@@ -62,8 +62,25 @@ namespace AppForSEII2526.API.DTOs.RentalDTOs
         {
             get
             {
-                return RentalDevices .Sum(ri => ri.PriceForRent * NumberOfDays);
+                var devices = RentalDevices ?? new List<RentalDeviceDTO>();
+                return devices.Sum(ri => ri.PriceForRent * NumberOfDays);
             }
+        }
+        public override bool Equals(object? obj)
+        {
+            return obj is RentalForCreateDTO dTO &&
+                   EqualityComparer<IList<RentalDeviceDTO>>.Default.Equals(RentalDevices, dTO.RentalDevices) &&
+                   RentalDate == dTO.RentalDate &&
+                   RentalDateFrom == dTO.RentalDateFrom &&
+                   RentalDateTo == dTO.RentalDateTo &&
+                   DeliveryAddress == dTO.DeliveryAddress &&
+                   Name == dTO.Name &&
+                   Surname == dTO.Surname &&
+                   PaymentMethod == dTO.PaymentMethod;
+        }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(RentalDevices, RentalDate, RentalDateFrom, RentalDateTo, DeliveryAddress, Name, Surname, PaymentMethod);
         }
     }
 }

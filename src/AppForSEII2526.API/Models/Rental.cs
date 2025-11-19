@@ -13,7 +13,7 @@
             RentalDate = rentalDate;
             RentalDateFrom = rentalDateFrom;
             RentalDateTo = rentalDateTo;
-            RentDevices = RentDevices;
+            RentDevices = RentDevices ?? new List<RentDevice>();
             DeliveryAddress = deliveryAddress;
             ApplicationUser = applicationUser;
             PaymentMethod = paymentMethod;
@@ -36,7 +36,7 @@
         [Display(Name = "Payment Method")]
         public PaymentMethodTypes PaymentMethod { get; set; }
 
-        public IList<RentDevice> RentDevices { get; set; }
+        public IList<RentDevice> RentDevices { get; set; } = new List<RentDevice>();
         public ApplicationUser ApplicationUser { get; set; }
     }
     public enum PaymentMethodTypes

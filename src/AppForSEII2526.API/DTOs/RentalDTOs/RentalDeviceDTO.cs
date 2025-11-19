@@ -30,6 +30,22 @@ namespace AppForSEII2526.API.DTOs.RentalDTO
         [Required]
         public double PriceForRent { get; set; }
 
+        public override bool Equals(object? obj)
+        {
+            return obj is RentalDeviceDTO dTO &&
+                   DeviceID == dTO.DeviceID &&
+                   Name == dTO.Name &&
+                   Brand == dTO.Brand &&
+                   Color == dTO.Color &&
+                   Year == dTO.Year &&
+                   Model == dTO.Model &&
+                   PriceForRent == dTO.PriceForRent;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(DeviceID, Name, Brand, Color, Year, Model, PriceForRent);
+        }
 
     }
 }

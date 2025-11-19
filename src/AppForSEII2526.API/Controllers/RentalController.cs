@@ -3,7 +3,8 @@ using AppForSEII2526.API.DTOs.RentalDTOs;
 using AppForSEII2526.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -19,6 +20,8 @@ namespace AppForSEII2526.API.Controllers
             _context = context;
             _logger = logger;
         }
+
+        
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(RentalForDetailDTO), (int)HttpStatusCode.OK)]
@@ -47,16 +50,18 @@ namespace AppForSEII2526.API.Controllers
                     )).ToList(),
                     r.PaymentMethod
                 ))
-                .FirstOrDefaultAsync(); 
+                .FirstOrDefaultAsync();
 
             if (rental == null)
             {
                 _logger.LogWarning("Rental with id {RentalId} not found.", id);
                 return NotFound();
             }
+
             return Ok(rental);
         }
 
+        
         [HttpPost]
         [Route("[action]")]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -64,27 +69,47 @@ namespace AppForSEII2526.API.Controllers
         [ProducesResponseType(typeof(RentalForDetailDTO), (int)HttpStatusCode.Created)]
         public async Task<ActionResult> CreateRental(RentalForCreateDTO rentalForCreate)
         {
-            //Validaciones iniciales
-            if (rentalForCreate.RentalDateFrom <=DateTime.Today)
+            
+            if (rentalForCreate == null)
+            {
+                ModelState.AddModelError("Body", "Error! Request body is required.");
+                return BadRequest(new ValidationProblemDetails(ModelState));
+            }
+
+            
+            var rentalDevices = rentalForCreate.RentalDevices ?? new List<RentalDeviceDTO>();
+
+            
+            if (rentalForCreate.RentalDateFrom <= DateTime.Today)
                 ModelState.AddModelError("RentalDateFrom", "Error! Your rental date must start later than today");
+
             if (rentalForCreate.RentalDateFrom >= rentalForCreate.RentalDateTo)
                 ModelState.AddModelError("RentalDateTo", "Error! The end date must be after the start date");
-            if (rentalForCreate.RentalDevices.Count == 0)
+
+            if (!rentalDevices.Any())
                 ModelState.AddModelError("RentalDevices", "Error! You must rent at least one device");
 
-            var user =await _context.ApplicationUser.FirstOrDefaultAsync(u => u.Name == rentalForCreate.Name && u.Surname == rentalForCreate.Surname);
+            var user = await _context.ApplicationUser
+                .FirstOrDefaultAsync(u => u.Name == rentalForCreate.Name &&
+                                          u.Surname == rentalForCreate.Surname);
+
             if (user == null)
                 ModelState.AddModelError("User", "Error! User not found");
 
-            var deviceNames = rentalForCreate.RentalDevices.Select(rd => rd.Name).ToList();
+            
+            if (ModelState.ErrorCount > 0)
+                return BadRequest(new ValidationProblemDetails(ModelState));
 
+            
+            var deviceNames = rentalDevices.Select(rd => rd.Name).ToList();
 
-            var devices =  _context.Device
+            var devices = await _context.Device
                 .Include(d => d.Model)
                 .Where(d => deviceNames.Contains(d.Name))
-                .ToList();
+                .ToListAsync();
 
-            Rental rental = new Rental(
+            
+            var rental = new Rental(
                 rentalForCreate.DeliveryAddress,
                 rentalForCreate.PaymentMethod,
                 user,
@@ -93,13 +118,19 @@ namespace AppForSEII2526.API.Controllers
                 rentalForCreate.RentalDateTo,
                 new List<RentDevice>());
 
-           foreach(var item in rentalForCreate.RentalDevices)
+            var numDays = (rental.RentalDateTo - rental.RentalDateFrom).TotalDays;
+            rental.TotalPrice = 0;
+
+            foreach (var item in rentalDevices)
             {
                 var device = devices.FirstOrDefault(d => d.Name == item.Name);
 
                 if (device == null)
                 {
-                    ModelState.AddModelError("ReviewItems", $"Error! Device named '{item.Name}' does not exist in the database");
+                    
+                    ModelState.AddModelError(
+                        "RentalDevices",
+                        $"Error! Device named '{item.Name}' is not available for being rented from {rentalForCreate.RentalDateFrom.ToShortDateString()} to {rentalForCreate.RentalDateTo.ToShortDateString()}");
                 }
                 else
                 {
@@ -109,13 +140,23 @@ namespace AppForSEII2526.API.Controllers
                         Quantity = 1,
                         Price = device.PriceForRent
                     });
+
+                    
+                    item.PriceForRent = device.PriceForRent;
                 }
             }
+
+            
             if (ModelState.ErrorCount > 0)
                 return BadRequest(new ValidationProblemDetails(ModelState));
+
+            
+            rental.TotalPrice = rental.RentDevices.Sum(rd => rd.Price * numDays);
+
             _context.Add(rental);
             try
             {
+                
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException dbEx)
@@ -124,33 +165,20 @@ namespace AppForSEII2526.API.Controllers
                 return Conflict("A database error occurred while processing your request.");
             }
 
-            var rentalCreated = await _context.Rental
-                .Where(r => r.Id == rental.Id)
-                .Select(r => new RentalForDetailDTO(
-                    r.Id,
-                    r.ApplicationUser.Name,
-                    r.ApplicationUser.Surname,
-                    r.DeliveryAddress,
-                    r.TotalPrice,
-                    r.RentalDate,
-                    r.RentalDateFrom,
-                    r.RentalDateTo,
+            
+            var rentalDetail = new RentalForDetailDTO(
+                rental.Id,
+                user.Name,
+                user.Surname,
+                rental.DeliveryAddress,
+                rental.TotalPrice,
+                rental.RentalDate,
+                rental.RentalDateFrom,
+                rental.RentalDateTo,
+                rentalDevices,
+                rental.PaymentMethod);
 
-                    r.RentDevices.Select(rd => new RentalDeviceDTO(
-                        rd.Device.Id,
-                        rd.Device.Name,
-                        rd.Device.Brand,
-                        rd.Device.Color,
-                        rd.Device.Year,
-                        rd.Device.Model.NameModel,
-                        rd.Price
-                    )).ToList(),
-                    r.PaymentMethod
-
-                ))
-                .FirstOrDefaultAsync();
-
-            return CreatedAtAction("GetRental", new { id = rental.Id }, rentalCreated);
+            return CreatedAtAction("GetRental", new { id = rental.Id }, rentalDetail);
         }
     }
 }
