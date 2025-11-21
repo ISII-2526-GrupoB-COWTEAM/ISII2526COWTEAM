@@ -72,11 +72,16 @@ namespace AppForSEII2526.API.Controllers
             if (string.IsNullOrWhiteSpace(receiptForCreate.ApplicationUserSurname))
                 ModelState.AddModelError("ApplicationUserSurname", "Error! The user's surname is required");
 
-            if (string.IsNullOrWhiteSpace(receiptForCreate.DeliveryAddress))
-                ModelState.AddModelError("DeliveryAddress", "Error! The delivery address is required");
 
             if (receiptForCreate.ReceiptItems == null || receiptForCreate.ReceiptItems.Count == 0)
                 ModelState.AddModelError("ReceiptItems", "Error! You must include at least one repair to contract");
+
+            
+            if (string.IsNullOrWhiteSpace(receiptForCreate.DeliveryAddress))
+                ModelState.AddModelError("DeliveryAddress", "Error! The delivery address is required");
+            else if (receiptForCreate.DeliveryAddress != null && !(receiptForCreate.DeliveryAddress.Contains("Calle") || (receiptForCreate.DeliveryAddress.Contains("Avenida"))))
+                ModelState.AddModelError("DeliveryAdress", "Error en la dirección de envío. Por favor, introduce una dirección válida incluyendo las palabras Calle o Avenida");
+
 
             if (ModelState.ErrorCount > 0)
                 return BadRequest(new ValidationProblemDetails(ModelState));

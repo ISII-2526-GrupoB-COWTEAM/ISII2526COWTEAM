@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Moq;
+using Microsoft.OpenApi.Writers;
 
 namespace AppForSEII2526.UT.ReceiptController_test
 {
@@ -17,6 +18,8 @@ namespace AppForSEII2526.UT.ReceiptController_test
         private const string _userName = "Carlos";
         private const string _userSurname = "Sanchez";
         private const string _deliveryAddress = "Calle Falsa 123";
+
+        private const string _deliveryAddress2 = "Falsa 123";
 
         public PostReceipt_test()
         {
@@ -82,6 +85,15 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 { new ReceiptItemDTO(1, "Cambio ruedas", "1:18", 120.5, "Ferrari F40") }
             );
 
+            //Dirección sin calle o avenida
+            var sprint2Adress = new ReceiptForCreate(
+                "Carlos",
+                "Sanchez",
+                "Falsa 123",
+                new List<ReceiptItemDTO>()
+                { new ReceiptItemDTO(1, "Cambio ruedas", "1:18", 120.5, "Ferrari F40") }
+            );
+
             // Reparación inexistente
             var repairNotExists = new ReceiptForCreate(
                 "Carlos",
@@ -97,7 +109,8 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 new object[] { noName, "Error! The user's name is required" },
                 new object[] { noSurname, "Error! The user's surname is required" },
                 new object[] { noAddress, "Error! The delivery address is required" },
-                new object[] { repairNotExists, "Error! Repair with ID" }
+                new object[] { repairNotExists, "Error! Repair with ID" },
+                new object[] { sprint2Adress, "Error en la dirección de envío. Por favor, introduce una dirección válida incluyendo las palabras Calle o Avenida" }
             };
         }
 
