@@ -4,6 +4,8 @@ using AppForSEII2526.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.IdentityModel.Tokens;
 using System.Net;
 
 namespace AppForSEII2526.API.Controllers
@@ -69,13 +71,18 @@ namespace AppForSEII2526.API.Controllers
         [ProducesResponseType(typeof(RentalForDetailDTO), (int)HttpStatusCode.Created)]
         public async Task<ActionResult> CreateRental(RentalForCreateDTO rentalForCreate)
         {
-            
+
             if (rentalForCreate == null)
             {
                 ModelState.AddModelError("Body", "Error! Request body is required.");
                 return BadRequest(new ValidationProblemDetails(ModelState));
             }
-
+            
+            if (rentalForCreate.DeliveryAddress != null && !rentalForCreate.DeliveryAddress.Contains("Calle") && !rentalForCreate.DeliveryAddress.Contains("Carretera"))
+            {
+                ModelState.AddModelError("DeliveryAddress", "Error! Por favor, introduce una dirección válida incluyendo las palabras Calle o Carretera");
+                return BadRequest(new ValidationProblemDetails(ModelState));
+            }
             
             var rentalDevices = rentalForCreate.RentalDevices ?? new List<RentalDeviceDTO>();
 

@@ -17,7 +17,7 @@ namespace AppForSEII2526.UT.RentalController_test
     {
         private const string _name = "Ana";
         private const string _surname = "Rodríguez de Vera";
-        private const string _deliveryAddress = "Avenida de España";
+        private const string _deliveryAddress = "Calle España";
 
         private const string _deviceName = "Iphone 11";
         private const string _deviceBrand = "Apple";
@@ -75,6 +75,15 @@ namespace AppForSEII2526.UT.RentalController_test
                     _devicePriceForRent)
             };
 
+            var invalidAddress = new RentalForCreateDTO(
+                _name, _surname,
+                "Avenida de España",
+                PaymentMethodTypes.CreditCard,
+                today,
+                today.AddDays(2),
+                today.AddDays(5),
+                new List<RentalDeviceDTO>());
+                
             
             var rentalNoItem = new RentalForCreateDTO(
                 _name, _surname,
@@ -136,7 +145,8 @@ namespace AppForSEII2526.UT.RentalController_test
                 new object[] { rentalFromBeforeToday, "Error! Your rental date must start later than today" },
                 new object[] { rentalToBeforeFrom,    "Error! The end date must be after the start date" },
                 new object[] { rentalUserNotFound,    "Error! User not found" },
-                new object[] { rentalDeviceNotExists, "Error! Device named" }   
+                new object[] { rentalDeviceNotExists, "Error! Device named" },
+                new object[] { invalidAddress,        "Error! Por favor, introduce una dirección válida incluyendo las palabras Calle o Carretera" }
             };
 
             return allTests;
