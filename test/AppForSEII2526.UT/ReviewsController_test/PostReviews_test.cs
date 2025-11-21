@@ -56,7 +56,7 @@ namespace AppForSEII2526.UT.ReviewsController_test
                 ReviewTitle = "",
                 ApplicationUserCountry = _userCountry,
                 ReviewItems = new List<ReviewItemDTO>()
-                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 5, "Comentario") }
+                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 5, "Reseña para Comentario") }
             };
 
             var reviewNoCountry = new ReviewForCreateDTO
@@ -64,7 +64,7 @@ namespace AppForSEII2526.UT.ReviewsController_test
                 ReviewTitle = _reviewTitle,
                 ApplicationUserCountry = "",
                 ReviewItems = new List<ReviewItemDTO>()
-                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 5, "Comentario") }
+                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 5, "Reseña para Comentario") }
             };
 
             var reviewInvalidRating = new ReviewForCreateDTO
@@ -72,7 +72,7 @@ namespace AppForSEII2526.UT.ReviewsController_test
                 ReviewTitle = _reviewTitle,
                 ApplicationUserCountry = _userCountry,
                 ReviewItems = new List<ReviewItemDTO>()
-                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 6, "Comentario") }
+                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 6, "Reseña para Comentario") }
             };
 
             var reviewDeviceNotExists = new ReviewForCreateDTO
@@ -80,7 +80,7 @@ namespace AppForSEII2526.UT.ReviewsController_test
                 ReviewTitle = _reviewTitle,
                 ApplicationUserCountry = _userCountry,
                 ReviewItems = new List<ReviewItemDTO>()
-                { new ReviewItemDTO(99, "NoExiste", "XYZ", 2024, 5, "Comentario") }
+                { new ReviewItemDTO(99, "NoExiste", "XYZ", 2024, 5, "Reseña para Comentario") }
             };
 
             var reviewNoComment = new ReviewForCreateDTO
@@ -91,6 +91,15 @@ namespace AppForSEII2526.UT.ReviewsController_test
                 { new ReviewItemDTO(1, "Movil1", "S14", 2024, 4, "") }
             };
 
+            //Nuevo del examen -> He cambiado todos los demas comentarios para que este sea el erroneo.
+            var reviewCommentNoEmpieza = new ReviewForCreateDTO
+            {
+                ReviewTitle = _reviewTitle,
+                ApplicationUserCountry = _userCountry,
+                ReviewItems = new List<ReviewItemDTO>()
+                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 4, "Comentario") }
+            };
+
             var allTests = new List<object[]>
             {
                 new object[] { reviewNoItems, "Error! You must include at least one device to review" },
@@ -98,7 +107,8 @@ namespace AppForSEII2526.UT.ReviewsController_test
                 new object[] { reviewNoCountry, "Error! The country is required" },
                 new object[] { reviewInvalidRating, "Error! Rating for device" },
                 new object[] { reviewDeviceNotExists, "Error! Device named" },
-                new object[] { reviewNoComment, "Error! You must include a comment for device" }
+                new object[] { reviewNoComment, "Error! You must include a comment for device" },
+                new object[] { reviewCommentNoEmpieza, "Error! The comment must start with Reseña para"}
             };
 
             return allTests;
@@ -143,7 +153,7 @@ namespace AppForSEII2526.UT.ReviewsController_test
                 ApplicationUserCountry = _userCountry,
                 ReviewTitle = _reviewTitle,
                 ReviewItems = new List<ReviewItemDTO>() 
-                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 5, "Comentario") }
+                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 5, "Reseña para Comentario") }
             };
 
             // DTO esperado
@@ -154,7 +164,7 @@ namespace AppForSEII2526.UT.ReviewsController_test
                 _reviewTitle,         
                 DateTime.Now,         
                 new List<ReviewItemDTO>()
-                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 5, "Comentario") }
+                { new ReviewItemDTO(1, "Movil1", "S14", 2024, 5, "Reseña para Comentario") }
             );
 
             // Act
