@@ -112,6 +112,10 @@ namespace AppForSEII2526.API.Controllers
                     if (item.Rating <= 0 || item.Rating > 5)
                         ModelState.AddModelError("Rating", $"Error! Rating for device '{item.Name}' must be between 1 and 5");
 
+                    //Nuevo del examen
+                    if (item.Comments != null && !item.Comments.StartsWith("Reseña para"))
+                        ModelState.AddModelError("Comments", "Error! The comment must start with Reseña para");
+
                     // Si todo es válido, creamos el ReviewItem
                     if (ModelState.ErrorCount == 0)
                     {
