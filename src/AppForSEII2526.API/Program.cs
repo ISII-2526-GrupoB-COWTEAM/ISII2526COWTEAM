@@ -1,3 +1,4 @@
+using AppForSEII2526.API.Logging;
 using Microsoft.Data.Sqlite;
 using System.Data.Common;
 
@@ -47,6 +48,18 @@ builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+
+
+
+
+builder.Logging.AddRabbitMQ(builder.Configuration.GetSection("RabbitMQ"));
+//”RabbitMQ” coincide con el nombre del bloque de propiedades en appsettings.json
+
+
+
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -116,3 +129,6 @@ app.Run();
 
 //Expose the implicitly defined Program class to the test project by doing:
 public partial class Program { }
+
+
+
