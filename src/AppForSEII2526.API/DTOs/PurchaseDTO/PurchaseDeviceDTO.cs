@@ -2,16 +2,8 @@
 
 namespace AppForSEII2526.API.DTOs.PurchaseDTO
 {
-    public class PurchaseDeviceDTO
+    public class PurchaseDeviceDTO 
     {
-        public PurchaseDeviceDTO(int deviceID, decimal purchasePrice, string brand, string model, int quantity)
-        {
-            DeviceId = deviceID;
-            PurchasePrice = purchasePrice;
-            Brand = brand ?? throw new ArgumentNullException(nameof(brand));
-            Model = model ?? throw new ArgumentNullException(nameof(model));
-            Quantity = quantity;
-        }
         public PurchaseDeviceDTO(
         int deviceID,
         string name,
@@ -33,39 +25,46 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
         }
 
         [Required]
-        [JsonPropertyName("deviceID")]
         public int DeviceId { get; set; }
 
         [Required]
-        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         [Required]
-        [JsonPropertyName("brand")]
         public string Brand { get; set; }
 
         [Required]
-        [JsonPropertyName("color")]
         public string Color { get; set; }
 
         [Required]
-        [JsonPropertyName("year")]
         public int Year { get; set; }
 
         [Required]
-        [JsonPropertyName("model")]
         public string Model { get; set; }
 
         [Required]
-        [JsonPropertyName("purchasePrice")]
         public decimal PurchasePrice { get; set; }
 
         [Required]
-        [JsonPropertyName("Quantity")]
-        // This is defined to check that at least one device is purchased
-        [Range(1, double.MaxValue, ErrorMessage = "You must provide a valid quantity")]
         public int Quantity { get; set; }
 
-        
+        public bool Equals(PurchaseDeviceDTO? obj)
+        {
+            return obj is PurchaseDeviceDTO dTO &&
+                   DeviceId == dTO.DeviceId &&
+                   Name == dTO.Name &&
+                   Brand == dTO.Brand &&
+                   Color == dTO.Color &&
+                   Year == dTO.Year &&
+                   Model == dTO.Model &&
+                   PurchasePrice == dTO.PurchasePrice &&
+                   Quantity == dTO.Quantity;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(DeviceId, Name, Brand, Color, Year, Model, PurchasePrice, Quantity);
+        }
+
     }
 }

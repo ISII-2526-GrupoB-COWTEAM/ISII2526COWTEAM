@@ -1,6 +1,14 @@
-﻿namespace AppForSEII2526.API.DTOs.PurchaseDTO
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+
+namespace AppForSEII2526.API.DTOs.PurchaseDTO
 {
-    public class DeviceForPurchaseDTO
+    public class DeviceForPurchaseDTO 
     {
         public DeviceForPurchaseDTO(int id, string name, string colour, decimal price, string model, string brand)
         {
@@ -11,43 +19,45 @@
             Model = model;
             Brand = brand;
         }
-
-        [JsonPropertyName("Id")]
+ 
         public int Id
         {
             get; set;
-
-        }
-
-        [Required]
-        [JsonPropertyName("Name")]
+        }      
         public string Name
         {
             get; set;
-        }
-        [Required]
-        [JsonPropertyName("Colour")]
+        }        
         public string Colour
         {
             get; set;
-        }
-        [Required]
-        [JsonPropertyName("Price")]
+        }       
         public decimal Price
         {
             get; set;
-        }
-        [Required]
-        [JsonPropertyName("Model")]
+        }     
         public string Model
         {
             get; set;
-        }
-        [Required]
-        [JsonPropertyName("Brand")]
+        }       
         public string Brand
         {
             get; set;
+        }
+        public bool Equals(DeviceForPurchaseDTO? other)
+        {
+            return other is not null &&
+                   Id == other.Id &&
+                   Name == other.Name &&
+                   Colour == other.Colour &&
+                   Price == other.Price &&
+                   Model == other.Model &&
+                   Brand == other.Brand;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Name, Colour, Price, Model, Brand);
         }
     }
 }
