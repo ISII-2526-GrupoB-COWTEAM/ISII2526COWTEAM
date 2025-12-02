@@ -46,9 +46,12 @@ namespace AppForSEII2526.API.Controllers
                 p.PurchaseItems
                     .Select(pd => new PurchaseDeviceDTO(
                         pd.Device.Id,
-                        pd.Device.PriceForPurchase,
+                        pd.Device.Name,
                         pd.Device.Brand,
+                        pd.Device.Color,
+                        pd.Device.Year,
                         pd.Device.Model.NameModel,
+                        pd.Device.PriceForPurchase,
                         pd.Quantity))
                     .ToList(),
                 (PaymentMethodTypes)p.PaymentMethod))
@@ -167,10 +170,12 @@ namespace AppForSEII2526.API.Controllers
                         p.PurchaseItems
                             .Select(pi => new PurchaseDeviceDTO(
                                 pi.Device.Id,
-                                /* purchasePrice mostrado en el detalle: el de la transacción */
-                                pi.Price,
+                                pi.Device.Name,
                                 pi.Device.Brand,
-                                pi.Device.Model.NameModel,   // importante: el texto del modelo
+                                pi.Device.Color,
+                                pi.Device.Year,
+                                pi.Device.Model.NameModel,   // <-- Este es el parámetro "model" que faltaba
+                                pi.Price,
                                 pi.Quantity))
                             .ToList(),
                         p.PaymentMethod))

@@ -70,11 +70,14 @@ namespace AppForSEII2526.UT.PurchaseController_test
                 purchaseDate: DateTime.Today,
                 purchaseDevices: new List<PurchaseDeviceDTO>
                 {
-                    new PurchaseDeviceDTO(
-                        deviceID: 1,          // Id del device en BD (si es Identity será 1)
-                        purchasePrice: 0m,    // el controlador usará PriceForPurchase=2000
+                    new(
+                        deviceID: 1,
+                        name: "ThinkPad",
                         brand: "Lenovo",
+                        color: "White",
+                        year: 2025,
                         model: "ThinkPad",
+                        purchasePrice: 0m,
                         quantity: 1)
                 }
             );
@@ -102,7 +105,7 @@ namespace AppForSEII2526.UT.PurchaseController_test
 
         [Fact]
         [Trait("Database", "WithoutFixture")]
-        [Trait("LevelTesting", "Unit Testing")]
+        [Trait("LevelTesting", "Unit Testing")] 
         public async Task CreatePurchase_BadRequest_UserNotFound_test()
         {
             // Arrange
@@ -121,8 +124,11 @@ namespace AppForSEII2526.UT.PurchaseController_test
                     new PurchaseDeviceDTO(
                         deviceID: 1,
                         purchasePrice: 0m,
+                        name: "ThinkPad",
                         brand: "Lenovo",
                         model: "ThinkPad",
+                        year: 2025,
+                        color: "White",
                         quantity: 1)
                 }
             );
@@ -158,9 +164,12 @@ namespace AppForSEII2526.UT.PurchaseController_test
                     // Modelo que NO existe en la BD
                     new PurchaseDeviceDTO(
                         deviceID: 999,
+                        name: "ModeloInexistente",
                         purchasePrice: 0m,
                         brand: "Lenovo",
                         model: "ModeloInexistente",
+                        year: 2025,
+                        color: "Black",
                         quantity: 1)
                 }
             );
