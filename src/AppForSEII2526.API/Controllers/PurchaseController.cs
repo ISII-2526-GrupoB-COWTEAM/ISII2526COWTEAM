@@ -74,7 +74,7 @@ namespace AppForSEII2526.API.Controllers
             [ProducesResponseType(typeof(PurchaseForDetailDTO), (int)HttpStatusCode.Created)]
             public async Task<ActionResult> CreatePurchase(PurchaseForCreateDTO purchaseForCreate)
             {
-                // ── Validaciones iniciales ──────────────────────────────────────────────────
+                
                 if (purchaseForCreate == null)
                 {
                     ModelState.AddModelError("Body", "Error! Request body is required.");
@@ -84,7 +84,7 @@ namespace AppForSEII2526.API.Controllers
                 if (purchaseForCreate.PurchaseDevices == null || purchaseForCreate.PurchaseDevices.Count == 0)
                     ModelState.AddModelError("PurchaseDevices", "Error! You must purchase at least one device");
 
-                // (Para compras directas no validamos rangos de fechas; solo la fecha de compra)
+                
                 if (purchaseForCreate.PurchaseDate > DateTime.Today.AddDays(1))
                     ModelState.AddModelError("PurchaseDate", "Error! Purchase date cannot be in the far future");
 
@@ -97,7 +97,7 @@ namespace AppForSEII2526.API.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(new ValidationProblemDetails(ModelState));
 
-                // ── Cargar dispositivos por nombre (según tu patrón anterior) ────────────────
+                
                 var deviceNames = purchaseForCreate.PurchaseDevices.Select(pd => pd.Model).ToList();
 
                 var devices = await _context.Device
@@ -105,7 +105,7 @@ namespace AppForSEII2526.API.Controllers
                     .Where(d => deviceNames.Contains(d.Name))
                     .ToListAsync();
 
-                // ── Construir la entidad Purchase con líneas ────────────────────────────────
+                
                 var purchase = new Purchase
                 {
                     DeliveryAddress = purchaseForCreate.DeliveryAddress,
@@ -128,19 +128,19 @@ namespace AppForSEII2526.API.Controllers
                     // Quantity del request (si no viene, por defecto 1)
                     var qty = item.Quantity > 0 ? item.Quantity : 1;
 
-                    // UnitPrice: tomamos el precio del catálogo (Device.PurchasePrice) para la transacción
+                    
                     purchase.PurchaseItems.Add(new PurchaseItem
                     {
                         Device = device,
                         Quantity = qty,
-                        Price = device.PriceForPurchase  // si tu campo se llama distinto (Price, Cost...), cámbialo aquí
+                        Price = device.PriceForPurchase  
                     });
                 }
 
                 if (ModelState.ErrorCount > 0)
                     return BadRequest(new ValidationProblemDetails(ModelState));
 
-                // TotalPrice como suma de líneas (si tu dominio lo calcula en DB/trigger, puedes omitir esto)
+                
                 purchase.TotalPrice = purchase.PurchaseItems.Sum(li => li.Price * li.Quantity);
 
                 _context.Add(purchase);
@@ -155,7 +155,7 @@ namespace AppForSEII2526.API.Controllers
                     return Conflict("A database error occurred while processing your request.");
                 }
 
-                // ── Proyección a DTO de detalle coherente con lo que ya usamos ──────────────
+               
                 var purchaseCreated = await _context.Purchase
                     .Where(p => p.Id == purchase.Id)
                     .Include(p => p.ApplicationUser)
@@ -174,7 +174,7 @@ namespace AppForSEII2526.API.Controllers
                                 pi.Device.Brand,
                                 pi.Device.Color,
                                 pi.Device.Year,
-                                pi.Device.Model.NameModel,   // <-- Este es el parámetro "model" que faltaba
+                                pi.Device.Model.NameModel,   
                                 pi.Price,
                                 pi.Quantity))
                             .ToList(),
