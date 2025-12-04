@@ -12,7 +12,8 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
         int year,
         string model,
         decimal purchasePrice,
-        int quantity)
+        int quantity,
+        string? description = null)
         {
             DeviceId = deviceID;
             Name = name;
@@ -22,6 +23,7 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
             Model = model ?? throw new ArgumentNullException(nameof(model));
             PurchasePrice = purchasePrice;
             Quantity = quantity;
+            Description = description; // opcional
         }
 
         [Required]
@@ -48,6 +50,8 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
         [Required]
         public int Quantity { get; set; }
 
+        public string? Description { get; set; }
+
         public bool Equals(PurchaseDeviceDTO? obj)
         {
             return obj is PurchaseDeviceDTO dTO &&
@@ -58,13 +62,11 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
                    Year == dTO.Year &&
                    Model == dTO.Model &&
                    PurchasePrice == dTO.PurchasePrice &&
-                   Quantity == dTO.Quantity;
+                   Quantity == dTO.Quantity &&
+                   Description == dTO.Description;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(DeviceId, Name, Brand, Color, Year, Model, PurchasePrice, Quantity);
-        }
+        
 
     }
 }

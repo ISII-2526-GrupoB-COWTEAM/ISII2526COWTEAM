@@ -45,6 +45,7 @@ string? URI2API = builder.Configuration.GetValue(typeof(string), "COW_API") as s
 builder.Services.AddScoped<AppForSEII2526APIClient>(sp => new AppForSEII2526APIClient(URI2API, new HttpClient()));
 //adding an In-memory state container service
 
+builder.Services.AddScoped<PurchaseStateContainer>();
 
 var app = builder.Build();
 

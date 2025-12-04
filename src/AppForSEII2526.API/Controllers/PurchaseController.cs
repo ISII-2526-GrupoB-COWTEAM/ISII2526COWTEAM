@@ -52,7 +52,8 @@ namespace AppForSEII2526.API.Controllers
                         pd.Device.Year,
                         pd.Device.Model.NameModel,
                         pd.Device.PriceForPurchase,
-                        pd.Quantity))
+                        pd.Quantity,
+                        pd.Description))
                     .ToList(),
                 (PaymentMethodTypes)p.PaymentMethod))
             .FirstOrDefaultAsync();
@@ -176,7 +177,8 @@ namespace AppForSEII2526.API.Controllers
                                 pi.Device.Year,
                                 pi.Device.Model.NameModel,   
                                 pi.Price,
-                                pi.Quantity))
+                                pi.Quantity,
+                                pi.Description))
                             .ToList(),
                         p.PaymentMethod))
                     .FirstOrDefaultAsync();
