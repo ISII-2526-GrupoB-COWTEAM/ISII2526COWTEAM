@@ -42,20 +42,16 @@
                 <div class="col">
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon-color">Color</span>
-                        <select class="form-select"
-                                aria-label="Color select"
-                                @bind="deviceColorSelected"
-                                id="selectColor">
-                            <option value="All" selected>All</option>
-                            @foreach (string colorName in colorsNames)
-                            {
-                                <option value="@colorName" id="colorNameSelected_@colorName">
-                                    @colorName
-                                </option>
-                            }
-                        </select>
+                        <input type="text"
+                               id="inputColor"
+                               @bind="deviceColorSelected"
+                               class="form-control"
+                               placeholder="Device color"
+                               aria-label="Device color"
+                               aria-describedby="basic-addon-color">
                     </div>
                 </div>
+
 
                 <!-- Botón de búsqueda -->
                 <div class="col">
@@ -275,16 +271,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Lista fija de colores para el filtro (no hay GetDeviceColorsAsync en el client)
-        colorsNames = new List<string>
-        {
-            "Black",
-            "White",
-            "Red",
-            "Blue",
-            "Green",
-            "Gray"
-        };
+        
 
         // Inicializar carrito si hace falta
         if (purchase.PurchaseDevices == null)
