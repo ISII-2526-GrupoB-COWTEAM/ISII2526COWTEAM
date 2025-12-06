@@ -1,0 +1,297 @@
+﻿@page "/purchases/selectdevicesforpurchase"
+
+@using Microsoft.AspNetCore.Authorization
+@using AppForSEII2526.Web.API
+@using System.Linq
+
+@inject AppForSEII2526APIClient apiclient
+@inject ILogger<SelectDevicesForPurchase> logger
+@inject PurchaseStateContainer purchaseState
+@inject NavigationManager navigation
+
+
+<h3>Select Devices For Purchase</h3>
+
+<div class="container-fluid">
+
+    <!-- Zona de errores -->
+    <div class="row alert alert-danger" role="alert" hidden="@HideErrors">
+        <p id="ErrorsShown">Errors: @errors</p>
+    </div>
+
+    <div class="row">
+        <!-- Columna izquierda: listado y filtros -->
+        <div class="col-8">
+            <div class="row">
+                <!-- Filtro por nombre -->
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Name</span>
+                        <input type="text"
+                               id="inputName"
+                               @bind="deviceName"
+                               class="form-control"
+                               placeholder="Device name"
+                               aria-label="Device name"
+                               aria-describedby="basic-addon1">
+                    </div>
+                </div>
+
+                <!-- Filtro por color -->
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon-color">Color</span>
+                        <input type="text"
+                               id="inputColor"
+                               @bind="deviceColorSelected"
+                               class="form-control"
+                               placeholder="Device color"
+                               aria-label="Device color"
+                               aria-describedby="basic-addon-color">
+                    </div>
+                </div>
+
+
+                <!-- Botón de búsqueda -->
+                <div class="col">
+                    <button type="button"
+                            class="btn btn-primary"
+                            @onclick="SearchDevices"
+                            id="searchDevices">
+                        Search devices
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabla de dispositivos -->
+            <div class="row">
+                @if (devices == null)
+                {
+                    <p>Loading devices...</p>
+                }
+                else
+                {
+                    <div class="mh-100 table-responsive">
+                        <table class="table table-condensed table-hover" id="TableOfDevices">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Brand</th>
+                                    <th>Color</th>
+                                    <th>Year</th>
+                                    <th>Model</th>
+                                    <th>Price</th>
+                                    <th>Add</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var device in devices)
+                                {
+                                    <tr id="DeviceData_@device.Name">
+                                        <td>@device.Name</td>
+                                        <td>@device.Brand</td>
+                                        <td>@device.Colour</td>
+                                        <td>@device.Year</td>
+                                        <td>@device.Model</td>
+                                        <td>@device.Price€</td>
+                                        <td>
+                                            <button class="btn btn-outline-secondary"
+                                                    id="deviceToPurchase_@device.Name"
+                                                    @onclick="@(() => AddDevice(device))">
+                                                Add
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Columna derecha: carrito de compra -->
+        <div class="col-2" hidden="@HidePurchaseCart">
+            <div class="row">
+                <h3>Shopping Cart</h3>
+            </div>
+
+            @if (purchase.PurchaseDevices != null)
+            {
+                @foreach (PurchaseDeviceDTO item in purchase.PurchaseDevices)
+                {
+                    <div class="row mb-1">
+                        <button type="button"
+                                class="btn btn-light w-100 text-start"
+                                id="removeDevice_@item.Name"
+                                @onclick="@(() => RemovePurchaseDevice(item))">
+                            x @item.Name - @item.PurchasePrice€ (Qty: @item.Quantity)
+                        </button>
+                    </div>
+                }
+            }
+
+            <div class="row mt-2">
+                <strong>Total: @purchase.TotalPrice€</strong>
+            </div>
+
+            <div class="row mt-3">
+                <button type="button"
+                        class="btn btn-primary"
+                        id="purchaseDevicesButton"
+                        @onclick="@GoToCreatePurchase">
+                    Proceed to purchase
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    // Estado de filtros
+    private string deviceName { get; set; }
+    private string deviceColorSelected { get; set; } = "All";
+    private ICollection<string> colorsNames { get; set; } = new List<string>();
+
+    // Lista de dispositivos devueltos por la API
+    // OJO: el cliente devuelve DeviceForPurchaseDTO, NO PurchaseDeviceDTO
+    private ICollection<DeviceForPurchaseDTO> devices;
+
+    // Errores
+    private string errors = "";
+    private bool HideErrors => string.IsNullOrEmpty(errors);
+
+    // Carrito: usamos el estado compartido de la compra
+    private PurchaseForCreateDTO purchase => purchaseState.Purchase;
+
+    // Visibilidad del carrito
+    private bool HidePurchaseCart =>
+        purchase.PurchaseDevices == null || purchase.PurchaseDevices.Count == 0;
+
+    // Añadir dispositivo al carrito (convierte DeviceForPurchaseDTO -> PurchaseDeviceDTO)
+    private void AddDevice(DeviceForPurchaseDTO device)
+    {
+        if (purchase.PurchaseDevices == null)
+        {
+            purchase.PurchaseDevices = new List<PurchaseDeviceDTO>();
+        }
+
+        var existing = purchase.PurchaseDevices
+            .FirstOrDefault(d => d.DeviceId == device.Id);
+
+        if (existing == null)
+        {
+            purchase.PurchaseDevices.Add(new PurchaseDeviceDTO
+            {
+                DeviceId = device.Id,
+                Name = device.Name,
+                Brand = device.Brand,
+                Color = device.Colour,
+                Year = device.Year,
+                Model = device.Model,
+                PurchasePrice = device.Price,
+                Quantity = 1,
+                Description = string.Empty
+            });
+        }
+        else
+        {
+            existing.Quantity++;
+        }
+
+        RecalculateTotalPrice();
+    }
+
+    // Eliminar dispositivo del carrito
+    private void RemovePurchaseDevice(PurchaseDeviceDTO item)
+    {
+        if (purchase.PurchaseDevices == null) return;
+
+        var existing = purchase.PurchaseDevices
+            .FirstOrDefault(d => d.DeviceId == item.DeviceId);
+
+        if (existing != null)
+        {
+            if (existing.Quantity > 1)
+            {
+                existing.Quantity--;
+            }
+            else
+            {
+                purchase.PurchaseDevices.Remove(existing);
+            }
+        }
+
+        RecalculateTotalPrice();
+    }
+
+    // Recalcular precio total del carrito
+    private void RecalculateTotalPrice()
+    {
+        if (purchase.PurchaseDevices == null || purchase.PurchaseDevices.Count == 0)
+        {
+            purchase.TotalPrice = 0;
+            return;
+        }
+
+        purchase.TotalPrice = purchase.PurchaseDevices
+            .Sum(d => d.PurchasePrice * d.Quantity);
+    }
+
+    // Búsqueda de dispositivos
+    public async Task SearchDevices()
+    {
+        var colorFilter = deviceColorSelected == "All" ? null : deviceColorSelected;
+
+        try
+        {
+            // OJO: este método devuelve ICollection<DeviceForPurchaseDTO>
+            devices = await apiclient.GetDevicesForPurchaseAsync(deviceName, colorFilter);
+
+            if (devices == null || !devices.Any())
+            {
+                errors = "There are no devices available.";
+                devices = new List<DeviceForPurchaseDTO>();
+            }
+            else
+            {
+                errors = "";
+            }
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError($"{DateTime.Now} Error getting devices: {ex}");
+            errors = "Error while connecting to the system";
+        }
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+
+        // Inicializar carrito si hace falta
+        if (purchase.PurchaseDevices == null)
+        {
+            purchase.PurchaseDevices = new List<PurchaseDeviceDTO>();
+        }
+
+        RecalculateTotalPrice();
+
+        // Carga inicial de dispositivos
+        await SearchDevices();
+    }
+
+    private void GoToCreatePurchase()
+    {
+        if (HidePurchaseCart)
+        {
+            // Si no hay nada en el carrito, no tiene sentido continuar
+            return;
+        }
+
+        navigation.NavigateTo("/purchases/createpurchase");
+    }
+}
