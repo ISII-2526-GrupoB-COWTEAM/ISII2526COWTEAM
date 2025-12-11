@@ -20,13 +20,18 @@ namespace AppForSEII2526.LogViewer
         private readonly IModel _channel;
         private readonly string _queueName;
 
-        public Subscriber(string hostName, int port, string userName, string password, string exchangeName)
+        // CAMBIO: nuevo campo para el filtro de topic
+        private readonly string _topicFilter;
+
+        // CAMBIO: añadimos parámetro topicFilter
+        public Subscriber(string hostName, int port, string userName, string password, string exchangeName, string topicFilter)
         {
             _hostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
             _port = port;
             _userName = userName ?? throw new ArgumentNullException(nameof(userName));
             _password = password ?? throw new ArgumentNullException(nameof(password));
             _exchangeName = exchangeName ?? throw new ArgumentNullException(nameof(exchangeName));
+            _topicFilter = topicFilter ?? throw new ArgumentNullException(nameof(topicFilter)); // CAMBIO
 
             // Crear la conexión
             var factory = new ConnectionFactory
@@ -40,10 +45,10 @@ namespace AppForSEII2526.LogViewer
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
 
-            // Declarar el exchange con durable = true para que coincida con el publicador
+            // CAMBIO: usar exchange de tipo Topic en vez de Fanout
             _channel.ExchangeDeclare(
                 exchange: _exchangeName,
-                type: ExchangeType.Fanout,
+                type: ExchangeType.Topic, // CAMBIO
                 durable: true,
                 autoDelete: false,
                 arguments: null);
@@ -59,19 +64,20 @@ namespace AppForSEII2526.LogViewer
             // Recuperar el nombre asignado por RabbitMQ
             _queueName = tempQueue.QueueName;
 
-            // Enlazar la cola al exchange
+            // CAMBIO: Enlazar la cola al exchange usando el topicFilter
             _channel.QueueBind(
                 queue: _queueName,
                 exchange: _exchangeName,
-                routingKey: "");
+                routingKey: _topicFilter); // CAMBIO
 
             Console.WriteLine($"[*] Conectado a RabbitMQ en {_hostName}:{_port}");
             Console.WriteLine($"[*] Escuchando logs desde el exchange '{_exchangeName}'");
             Console.WriteLine($"[*] Cola creada: {_queueName}");
+            Console.WriteLine($"[*] Topic filter: '{_topicFilter}'"); // CAMBIO
             Console.WriteLine("[*] Esperando mensajes. Presiona CTRL+C para salir.\n");
         }
 
-     public void StartListening()
+        public void StartListening()
         {
             var consumer = new EventingBasicConsumer(_channel);
 
@@ -172,18 +178,17 @@ namespace AppForSEII2526.LogViewer
             GC.SuppressFinalize(this);
         }
 
-    // Clase interna para deserializar los logs
-    private class LogEntry
-    {
-        public DateTime Timestamp { get; set; }
-        public string? LogLevel { get; set; }
-        public string? Category { get; set; }
-        public int EventId { get; set; }
-        public string? EventName { get; set; }
-        public string? Message { get; set; }
-        public string? Exception { get; set; }
+        // Clase interna para deserializar los logs
+        private class LogEntry
+        {
+            public DateTime Timestamp { get; set; }
+            public string? LogLevel { get; set; }
+            public string? Category { get; set; }
+            public int EventId { get; set; }
+            public string? EventName { get; set; }
+            public string? Message { get; set; }
+            public string? Exception { get; set; }
+        }
     }
-
-}
 }
 

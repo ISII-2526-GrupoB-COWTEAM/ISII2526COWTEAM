@@ -91,10 +91,11 @@ public class RabbitMQLogger : ILogger, IDisposable
             var json = JsonConvert.SerializeObject(logEntry);
             var body = Encoding.UTF8.GetBytes(json);
 
+            var routingKey = $"logs.{logLevel.ToString().ToLower()}";   // CAMBIO
 
             _channel.BasicPublish(
             exchange: _config.Exchange,
-            routingKey: "",
+            routingKey: routingKey,
             basicProperties: _properties,
             body: body);
 
