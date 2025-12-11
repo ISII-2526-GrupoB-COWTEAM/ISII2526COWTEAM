@@ -1,0 +1,125 @@
+﻿@page "/purchase/detailpurchase"
+
+@using AppForSEII2526.Web.API
+@using Microsoft.AspNetCore.Authorization
+@inject AppForSEII2526APIClient apiclient
+
+<h3>DetailPurchase</h3>
+
+
+
+@if (purchase == null)
+{
+    <p>@error</p>
+}
+else
+{
+    <table class="table table-borderless table-sm">
+        <tr>
+            <th>Name and Surname</th>
+            <td id="NameSurname">@purchase.Name @purchase.Surname</td>
+        </tr>
+        <tr>
+            <th>Delivery Address</th>
+            <td id="DeliveryAddress">@purchase.DeliveryAddress</td>
+        </tr>
+        <tr>
+            <th>Payment Method</th>
+            <td id="PaymentMethod">@purchase.PaymentMethod</td>
+        </tr>
+        <tr>
+            <th>Purchase Date</th>
+            <td id="PurchaseDate">@purchase.PurchaseDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
+        </tr>
+     </table>
+
+    <h4>Purchased Devices</h4>
+
+    <h4>Purchased Devices</h4>
+
+    <table class="table" id="PurchasedDevices">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Brand</th>
+                <th scope="col">Color</th>
+                <th scope="col">Year</th>
+                <th scope="col">Model</th>
+                <th scope="col">Price for Purchase</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (PurchaseDeviceDTO item in purchase.PurchaseDevices)
+            {
+                <tr id="PurchaseDevice_@item.DeviceId">
+                    <td>@item.Name</td>
+                    <td>@item.Brand</td>
+                    <td>@item.Color</td>
+                    <td>@item.Year</td>
+                    <td>@item.Model</td>
+                    <td>@item.PurchasePrice €</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Description</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th scope="row" colspan="7" class="text-end">Total Price</th>
+                <td id="TotalPrice">@purchase.TotalPrice €</td>
+            </tr>
+        </tfoot>
+    </table>
+
+
+}
+
+@code {
+    [Parameter]
+    public int PurchaseID { get; set; }
+
+    private PurchaseForDetailDTO? purchase;
+    private string? error;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Validate logged-in user
+        string userName = "";
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            if (user is not null)
+            {
+                if (user.Identity is not null &&
+                    user.Identity.IsAuthenticated &&
+                    user.IsInRole("User"))
+                {
+                    userName = user.Identity.Name;
+                }
+            }
+        }
+
+        try
+        {
+            // Call the API to get the purchase
+            purchase = await apiclient.GetPurchaseAsync(PurchaseID);
+        }
+        catch (ApiException)
+        {
+            purchase = null;
+        }
+
+        // Validate ownership
+        if (purchase == null || purchase.Name != userName)
+        {
+            error = $"Error! You are not authorized to see this purchase or it does not exist (id={PurchaseID}).";
+        }
+    }
+}
