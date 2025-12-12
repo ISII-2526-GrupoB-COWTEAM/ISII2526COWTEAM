@@ -65,7 +65,7 @@ namespace AppForSEII2526.API.Controllers
                 .ThenBy(d => d.Brand)
                 .Select(d => new DeviceForPurchaseDTO
                 (
-                    d.Id, d.Name, d.Color, (decimal)d.PriceForPurchase, d.Model.NameModel, d.Brand
+                    d.Id, d.Name, d.Color, (decimal)d.PriceForPurchase, d.Model.NameModel, d.Brand, d.Year
                 )).ToListAsync();
 
          /*   // Error filtro de color -> no hay resultados  

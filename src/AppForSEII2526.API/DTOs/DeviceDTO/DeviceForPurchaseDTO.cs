@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
 {
     public class DeviceForPurchaseDTO 
     {
-        public DeviceForPurchaseDTO(int id, string name, string colour, decimal price, string model, string brand)
+        public DeviceForPurchaseDTO(int id, string name, string colour, decimal price, string model, string brand, int year)
         {
             Id = id;
             Name = name;
@@ -18,6 +19,7 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
             Price = price;
             Model = model;
             Brand = brand;
+            Year = year;
         }
  
         public int Id
@@ -44,6 +46,10 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
         {
             get; set;
         }
+        public int Year
+        {
+            get; set;
+        }
         public bool Equals(DeviceForPurchaseDTO? other)
         {
             return other is not null &&
@@ -52,12 +58,13 @@ namespace AppForSEII2526.API.DTOs.PurchaseDTO
                    Colour == other.Colour &&
                    Price == other.Price &&
                    Model == other.Model &&
-                   Brand == other.Brand;
+                   Brand == other.Brand &&
+                   Year == other.Year;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Name, Colour, Price, Model, Brand);
+            return HashCode.Combine(Id, Name, Colour, Price, Model, Brand, Year);
         }
     }
 }
