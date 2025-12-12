@@ -1,4 +1,4 @@
-﻿@page "/purchase/detailpurchase"
+﻿@page "/purchases/detailpurchase"
 
 @using AppForSEII2526.Web.API
 @using Microsoft.AspNetCore.Authorization
@@ -78,6 +78,7 @@ else
 
 @code {
     [Parameter]
+    [SupplyParameterFromQuery]
     public int PurchaseID { get; set; }
 
     private PurchaseForDetailDTO? purchase;
@@ -86,7 +87,27 @@ else
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
 
+
     protected override async Task OnInitializedAsync()
+    {
+        if (PurchaseID <= 0)
+        {
+            error = "Missing or invalid PurchaseID in the URL.";
+            return;
+        }
+
+        try
+        {
+            purchase = await apiclient.GetPurchaseAsync(PurchaseID);
+            error = null;
+        }
+        catch (ApiException ex)
+        {
+            purchase = null;
+            error = $"Error loading purchase (id={PurchaseID}). Status: {ex.StatusCode}";
+        }
+    }
+  /*  protected override async Task OnInitializedAsync()
     {
         // Validate logged-in user
         string userName = "";
@@ -121,5 +142,5 @@ else
         {
             error = $"Error! You are not authorized to see this purchase or it does not exist (id={PurchaseID}).";
         }
-    }
+    }*/
 }

@@ -38,7 +38,7 @@ namespace AppForSEII2526.API.Controllers
                 .ThenInclude(pd => pd.Device)          // Then join Devices table
             .Select(p => new PurchaseForDetailDTO(
                 p.Id,
-                p.ApplicationUser.UserName,
+                p.ApplicationUser.Name,
                 p.ApplicationUser.Surname,
                 p.DeliveryAddress,
                 p.PurchaseDate,
@@ -99,10 +99,9 @@ namespace AppForSEII2526.API.Controllers
                     return BadRequest(new ValidationProblemDetails(ModelState));
 
                 
-                var deviceNames = purchaseForCreate.PurchaseDevices.Select(pd => pd.Model).ToList();
+                var deviceNames = purchaseForCreate.PurchaseDevices.Select(pd => pd.Name).ToList();
 
                 var devices = await _context.Device
-                    .Include(d => d.Model)
                     .Where(d => deviceNames.Contains(d.Name))
                     .ToListAsync();
 
@@ -118,11 +117,11 @@ namespace AppForSEII2526.API.Controllers
 
                 foreach (var item in purchaseForCreate.PurchaseDevices)
                 {
-                    var device = devices.FirstOrDefault(d => d.Name == item.Model);
+                    var device = devices.FirstOrDefault(d => d.Name == item.Name);
 
                     if (device == null)
                     {
-                        ModelState.AddModelError("PurchaseDevices", $"Error! Device named '{item.Model}' does not exist in the database");
+                        ModelState.AddModelError("PurchaseDevices", $"Error! Device named '{item.Name}' does not exist in the database");
                         continue;
                     }
 
@@ -163,7 +162,7 @@ namespace AppForSEII2526.API.Controllers
                     .Include(p => p.PurchaseItems).ThenInclude(pi => pi.Device).ThenInclude(d => d.Model)
                     .Select(p => new PurchaseForDetailDTO(
                         p.Id,
-                        p.ApplicationUser.UserName,
+                        p.ApplicationUser.Name,
                         p.ApplicationUser.Surname,
                         p.DeliveryAddress,
                         p.PurchaseDate,
