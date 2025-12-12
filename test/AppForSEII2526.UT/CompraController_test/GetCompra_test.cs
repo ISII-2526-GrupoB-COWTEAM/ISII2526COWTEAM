@@ -94,7 +94,7 @@ namespace AppForSEII2526.UT.PurchasesController_test
 
             // Comprobamos datos básicos
             Assert.Equal(purchaseId, dto.Id);
-            Assert.Equal("jaime.rodiguez7@uclm.es", dto.Name);
+            Assert.Equal("Jaime", dto.Name);
             Assert.Equal("Rodriguez de Vera", dto.Surname);
             Assert.Equal("Avda. España s/n, Albacete", dto.DeliveryAddress);
             Assert.Equal(PaymentMethodTypes.CreditCard, dto.PaymentMethod);
