@@ -22,7 +22,7 @@ namespace AppForSEII2526.API.Controllers
         {
             _context = context;
             _logger = logger;
-            _logger.LogInformation("TodoService initialized");
+            
         }
 
         
@@ -58,9 +58,11 @@ namespace AppForSEII2526.API.Controllers
 
             if (rental == null)
             {
-                _logger.LogWarning("Rental with id {RentalId} not found.", id);
+                _logger.LogError("Rental with id {RentalId} not found.", id); //antes era LogWarning
                 return NotFound();
             }
+            _logger.LogInformation("Rental with id {Id} retrieved successfully.", id);//nuevo para distribuidos
+
 
             return Ok(rental);
         }
