@@ -42,6 +42,31 @@
                     else
                     {
                         <p>number of devices @devices.Count</p>
+                        <div class="mh-100 table-responsive">
+                            <table class="table table-condensed table-hover" id="TableOfMovies">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Model</th>
+                                        <th>Price For Renting</th>
+                                        <th>Rent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var device in devices)
+                                    {
+                                        <tr id="DeviceData_@device.Name">
+                                            <td>@device.Name</td>
+                                            <td>@device.Model</td>
+                                            <td>@device.PriceForRent</td>
+                                            <td>
+                                                <button class="btn btn-outline-secondary" id="deviceToRent_@device.Name" @onclick="@(() => AddDevice(device))">Add</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     }
                 </div>
             </div>
@@ -63,7 +88,7 @@
 
     private bool hiddenRentingCart = true;
 
-    private void AddMovie(DeviceForRentalDTO movie)
+    private void AddDevice(DeviceForRentalDTO movie)
     {
         rentalState.AddDeviceToRental(movie);
     }
