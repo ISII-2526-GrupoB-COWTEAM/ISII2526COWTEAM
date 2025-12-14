@@ -4,6 +4,7 @@
 @using AppForSEII2526.Web.API
 @inject AppForSEII2526APIClient apiclient
 @inject ILogger<SelectDevicesForRental> logger
+@inject RentalStateContainer rentalState
 
 <h3>Select Devices For Rental</h3>
 <div class="container-fluid">
@@ -57,6 +58,21 @@
     private string errors = "";
     private string deviceModel { get; set; }
     private double devicePrice { get; set; }
+
+    private RentalForCreateDTO rental => rentalState.Rental;
+
+    private bool hiddenRentingCart = true;
+
+    private void AddMovie(DeviceForRentalDTO movie)
+    {
+        rentalState.AddDeviceToRental(movie);
+    }
+
+    private void RemoveRentalItem(RentalDeviceDTO item)
+    {
+        rentalState.RemoveRentalDeviceToRent(item);
+        if (rental.RentalDevices.Count == 0) hiddenRentingCart = true;
+    }
 
     public async void SearchDevices()
     {
