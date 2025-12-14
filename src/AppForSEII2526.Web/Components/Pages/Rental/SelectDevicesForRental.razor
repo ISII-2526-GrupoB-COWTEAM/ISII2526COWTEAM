@@ -1,26 +1,60 @@
 ﻿<h3>SelectDevicesForRental</h3>
 @page "/rental/selectdevicesforrental"
+
+@using AppForSEII2526.Web.API
+@inject AppForSEII2526APIClient apiclient
+@inject ILogger<SelectDevicesForRental> logger
+
 <h3>Select Devices For Rental</h3>
 <div class="container-fluid">
     <div class="row">
-        <p>here i will show the errors</p>
-    </div>
-    <div class="row">
-        <div class="col-8">
-            <div class="row">
-                <p>here i will show the filters</p>
+        <div class="row" hidden="@hideErrors">
+            <p>here i will show the errors</p>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="row">
+                    <p>here i will show the filters</p>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary" @onclick=@SearchDevices id="searchDevices">Search devices</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>here i will show the list of devices</p>
+                    @if (devices == null) {
+                        <p>Loading devices....</p>
+                    }
+                    else
+                    {
+                        <p>number of devices @devices.Count</p>
+                    }
+                </div>
             </div>
-            <div class="row">
-                <p>here i will show the list of devices</p>
+            <div class="col-2">
+                <p>here i will show the renting cart</p>
             </div>
         </div>
-        <div class="col-2">
-            <p>here i will show the renting cart</p>
-        </div>
-
     </div>
-
 </div>
-@code {
 
+@code {
+    private ICollection<DeviceForRentalDTO> devices;
+    private bool hideErrors { get { return errors.Length == 0; } }
+    private string errors = "";
+    private string deviceModel { get; set; }
+    private double devicePrice { get; set; }
+
+    public async void SearchDevices()
+    {
+        try
+        {
+            devices = await apiclient.GetDevicesForRentalAsync(deviceModel, devicePrice);
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError($"{DateTime.Now} Error: {ex}");
+            errors = "Error while connecting to the system";
+        }
+        StateHasChanged();
+    }
 }
