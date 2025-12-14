@@ -16,6 +16,20 @@
                 <div class="row">
                     <p>here i will show the filters</p>
                     <div class="col">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">Title</span>
+                            <input type="text" id="inputTitle" @bind=deviceModel class="form-control" placeholder="Model" aria-label="Model" aria-describedby="basic-addon1">
+                        </div>
+
+                    </div>
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">Genre</span>
+                            <input type="text" id="inputGenre" @bind=devicePrice class="form-control" placeholder="Price" aria-label="Price" aria-describedby="basic-addon1">
+                        </div>
+                    </div>
+
+                    <div class="col">
                         <button type="button" class="btn btn-primary" @onclick=@SearchDevices id="searchDevices">Search devices</button>
                     </div>
                 </div>
