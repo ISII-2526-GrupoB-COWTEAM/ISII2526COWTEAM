@@ -87,8 +87,7 @@ else
                 return;
             }
 
-            var receipts = await apiclient.GetReceiptDetailAsync(ReceiptID);
-            receipt = receipts?.FirstOrDefault();
+            receipt = await apiclient.GetReceiptDetailAsync(ReceiptID);
             
             if (receipt == null)
             {
