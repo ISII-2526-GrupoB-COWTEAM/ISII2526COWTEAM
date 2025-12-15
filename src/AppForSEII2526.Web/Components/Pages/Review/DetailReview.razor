@@ -1,0 +1,119 @@
+@page "/reviews/detailreview"
+
+@using AppForSEII2526.Web.API
+@inject AppForSEII2526APIClient apiclient
+@inject ILogger<DetailReview> logger
+@inject NavigationManager navigation
+
+<h3>Detail Review</h3>
+
+@if (review == null)
+{
+    if (error == null)
+    {
+         <p>Loading...</p>
+    }
+    else
+    {
+        <p>@error</p>
+    }
+}
+else
+{
+    <table class="table table-borderless table-sm">
+        <tr>
+             <th>User</th>
+             <td>@review.ApplicationUserName</td>
+        </tr>
+         <tr>
+             <th>Country</th>
+             <td>@review.ApplicationUserCountry</td>
+        </tr>
+         <tr>
+             <th>Title</th>
+             <td>@review.ReviewTitle</td>
+        </tr>
+        <tr>
+             <th>Date</th>
+             <td>@review.ReviewDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
+        </tr>
+        <tr>
+             <th>Overall Rating</th>
+             <td>@review.OverallRating</td>
+        </tr>
+    </table>
+
+    <h4>Review Items</h4>
+
+    <table class="table" id="ReviewItems">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Model</th>
+                <th>Rating</th>
+                <th>Comments</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in review.ReviewItems)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Model</td>
+                    <td>@item.Rating</td>
+                    <td>@item.Comments</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int ReviewID { get; set; }
+
+    private ReviewDetailDTO? review;
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ReviewID <= 0)
+        {
+            error = "Missing or invalid ReviewID in the URL.";
+            return;
+        }
+
+        try
+        {
+            var reviews = await apiclient.GetReviewAsync(ReviewID);
+            
+            if (reviews == null)
+            {
+                error = $"API returned null for review ID {ReviewID}.";
+                return;
+            }
+            
+            review = reviews.FirstOrDefault();
+
+            if (review == null)
+            {
+                error = $"Review with ID {ReviewID} not found in the returned collection (Count: {reviews.Count}).";
+            }
+            else
+            {
+                error = null;
+            }
+        }
+        catch (ApiException ex)
+        {
+             review = null;
+             error = $"API Error loading review (id={ReviewID}). Status: {ex.StatusCode}, Message: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+             review = null;
+             error = $"Unexpected error: {ex.Message}";
+        }
+    }
+}

@@ -1,0 +1,223 @@
+@page "/reviews/selectdevicesforreview"
+
+@using Microsoft.AspNetCore.Authorization
+@using AppForSEII2526.Web.API
+@using System.Linq
+
+@inject AppForSEII2526APIClient apiclient
+@inject ILogger<SelectDevicesForReview> logger
+@inject ReviewStateContainer reviewState
+@inject NavigationManager navigation
+
+
+<h3>Select Devices For Review</h3>
+
+<div class="container-fluid">
+
+    <!-- Zona de errores -->
+    <div class="row alert alert-danger" role="alert" hidden="@HideErrors">
+        <p id="ErrorsShown">Errors: @errors</p>
+    </div>
+
+    <div class="row">
+        <!-- Columna izquierda: listado y filtros -->
+        <div class="col-8">
+            <div class="row">
+                <!-- Filtro por brand -->
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Brand</span>
+                        <input type="text"
+                               id="inputBrand"
+                               @bind="brandFilter"
+                               class="form-control"
+                               placeholder="Brand"
+                               aria-label="Brand"
+                               aria-describedby="basic-addon1">
+                    </div>
+                </div>
+
+                <!-- Filtro por year -->
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon-year">Year</span>
+                        <input type="number"
+                               id="inputYear"
+                               @bind="yearFilter"
+                               class="form-control"
+                               placeholder="Year"
+                               aria-label="Year"
+                               aria-describedby="basic-addon-year">
+                    </div>
+                </div>
+
+
+                <!-- Botón de búsqueda -->
+                <div class="col">
+                    <button type="button"
+                            class="btn btn-primary"
+                            @onclick="SearchDevices"
+                            id="searchDevices">
+                        Search devices
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabla de dispositivos -->
+            <div class="row">
+                @if (devices == null)
+                {
+                    <p>Loading devices...</p>
+                }
+                else
+                {
+                    <div class="mh-100 table-responsive">
+                        <table class="table table-condensed table-hover" id="TableOfDevices">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Brand</th>
+                                    <th>Color</th>
+                                    <th>Year</th>
+                                    <th>Model</th>
+                                    <th>Add</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var device in devices)
+                                {
+                                    <tr id="DeviceData_@device.Id">
+                                        <td>@device.Name</td>
+                                        <td>@device.Brand</td>
+                                        <td>@device.Color</td>
+                                        <td>@device.Year</td>
+                                        <td>@device.Model</td>
+                                        <td>
+                                            <button class="btn btn-outline-secondary"
+                                                    id="deviceToReview_@device.Id"
+                                                    @onclick="@(() => AddDevice(device))">
+                                                Add
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Columna derecha: carrito de review -->
+        <div class="col-2" hidden="@HideReviewCart">
+            <div class="row">
+                <h3>Review Cart</h3>
+            </div>
+
+            @if (review.ReviewItems != null)
+            {
+                @foreach (ReviewItemDTO item in review.ReviewItems)
+                {
+                    <div class="row mb-1">
+                        <button type="button"
+                                class="btn btn-light w-100 text-start"
+                                id="removeDevice_@item.Name"
+                                @onclick="@(() => RemoveReviewItem(item))">
+                            x @item.Name (@item.Model)
+                        </button>
+                    </div>
+                }
+            }
+
+            <div class="row mt-3">
+                <button type="button"
+                        class="btn btn-primary"
+                        id="reviewDevicesButton"
+                        @onclick="@GoToCreateReview">
+                    Proceed to review
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    // Estado de filtros
+    private string brandFilter { get; set; }
+    private int? yearFilter { get; set; }
+
+    // Lista de dispositivos devueltos por la API
+    private ICollection<DeviceForReviewDTO> devices;
+
+    // Errores
+    private string errors = "";
+    private bool HideErrors => string.IsNullOrEmpty(errors);
+
+    // Carrito: usamos el estado compartido
+    private ReviewForCreateDTO review => reviewState.Review;
+
+    // Visibilidad del carrito
+    private bool HideReviewCart =>
+        review.ReviewItems == null || review.ReviewItems.Count == 0;
+
+    // Añadir dispositivo al carrito
+    private void AddDevice(DeviceForReviewDTO device)
+    {
+        reviewState.AddDeviceToReview(device);
+    }
+
+    // Eliminar dispositivo del carrito
+    private void RemoveReviewItem(ReviewItemDTO item)
+    {
+        reviewState.RemoveReviewItem(item);
+    }
+
+    // Búsqueda de dispositivos
+    public async Task SearchDevices()
+    {
+        try
+        {
+            devices = await apiclient.GetDevicesForReviewAsync(brandFilter, yearFilter);
+
+            if (devices == null || !devices.Any())
+            {
+                errors = "There are no devices available.";
+                devices = new List<DeviceForReviewDTO>();
+            }
+            else
+            {
+                errors = "";
+            }
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError($"{DateTime.Now} Error getting devices: {ex}");
+            errors = "Error while connecting to the system";
+        }
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Inicializar carrito si hace falta
+        if (review.ReviewItems == null)
+        {
+           // Should be initialized in StateContainer but check just in case
+        }
+
+        // Carga inicial de dispositivos
+        await SearchDevices();
+    }
+
+    private void GoToCreateReview()
+    {
+        if (HideReviewCart)
+        {
+            return;
+        }
+
+        navigation.NavigateTo("/reviews/createreview");
+    }
+}
