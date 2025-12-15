@@ -1,0 +1,193 @@
+﻿@page "/repairs/createrepair"
+
+@inject NavigationManager navigation
+@using AppForSEII2526.Web.Components.Shared
+@using AppForSEII2526.Web.API
+@using Microsoft.AspNetCore.Authorization
+@inject AppForSEII2526APIClient apiclient
+@inject ILogger<CreateRepair> logger
+@inject ReceiptStateContainer receiptState
+
+
+<h3>Contract Repair</h3>
+
+@* receipt is the object that will be edited thanks to the form *@
+<EditForm Model="receipt" OnValidSubmit="OpenDialog">
+    <div class="row">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="row alert alert-danger" />
+    </div>
+
+    <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+        <p id="ErrorsShown">Errors: @messageError</p>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="receipt.ApplicationUserName" class="form-control" id="Name" />
+                <label for="Name">Name</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="receipt.ApplicationUserSurname" class="form-control" id="Surname" />
+                <label for="Surname">Surname</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="receipt.DeliveryAddress" class="form-control" id="DeliveryAddress" />
+                <label for="DeliveryAddress">Delivery Address</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-2">
+        <div class="col-md">
+            <div class="form-floating">
+                @* Dropdown for selecting the payment method *@
+                <InputSelect class="form-select" @bind-Value="paymentMethod" id="PaymentMethod">
+                    <option value="@PaymentMethodTypes.CreditCard" selected>CreditCard</option>
+                    <option value="@PaymentMethodTypes.PayPal">PayPal</option>
+                    <option value="@PaymentMethodTypes.Cash">Cash</option>
+                </InputSelect>
+                <label for="PaymentMethod">Payment Method</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating">
+                @* Button to confirm the repair contract *@
+                <button class="btn btn-primary" type="submit" id="Submit" disabled="@contractButtonDisabled">
+                    Contract repairs
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <h4>Repair detail</h4>
+    <p>
+        <b>Total cost:</b> @TotalCost €
+        <button class="btn btn-outline-primary" type="button" @onclick="ModifyRepairs" id="ModifyRepairs">
+            Modify repairs
+        </button>
+    </p>
+
+    <div class="mh-100 table-responsive">
+        <table class="table table-condensed table-hover" id="TableOf">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Scale</th>
+                    <th>Cost</th>
+                    <th>Device Model</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in receipt.ReceiptItems)
+                {
+                    <tr id="RepairData_@item.RepairID">
+                        <td>@item.Name</td>
+                        <td>@item.Scale</td>
+                        <td>@item.Cost</td>
+                        <td>
+                            <InputText @bind-Value="item.Model"
+                                       class="form-control"
+                                       id="@($"model_{item.RepairID}")"
+                                       placeholder="Enter device model" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</EditForm>
+
+@* Modal popup dialog for checking if user wants to proceed to contract *@
+@if (DialogIsOpen)
+{
+    <Dialog Caption="Contract repairs"
+            Message="Do you want to proceed to contract the selected repairs?"
+            OnClose="@OnDialogClose"
+            Type="Dialog.Category.SaveNot">
+    </Dialog>
+}
+
+@code {
+    private string messageError = "";
+    private bool hideErrors => messageError.Length == 0;
+
+    // Payment method (not in ReceiptForCreate, so we handle it separately)
+    private PaymentMethodTypes paymentMethod = PaymentMethodTypes.CreditCard;
+
+    // contract button will be disabled if there are no repairs in the cart
+    private bool contractButtonDisabled =>
+        receipt.ReceiptItems == null || receipt.ReceiptItems.Count == 0;
+
+    private bool DialogIsOpen;
+
+    private decimal TotalCost
+    {
+        get
+        {
+            double cost = receipt.ReceiptItems.Sum(ri => ri.Cost);
+            return Convert.ToDecimal(cost);
+        }
+    }
+
+    private void ModifyRepairs()
+    {
+        navigation.NavigateTo("/repairs/selectrepairs");
+    }
+
+    private ReceiptForCreate receipt => receiptState.Receipt;
+
+    private void OpenDialog()
+    {
+        DialogIsOpen = true;
+    }
+
+    private async Task OnDialogClose(bool isOk)
+    {
+        DialogIsOpen = false;
+
+        if (isOk)
+        {
+            if (receipt.ReceiptItems.Count > 0)
+            {
+                // Validate that all repairs have a model specified
+                var missingModels = receipt.ReceiptItems.Where(ri => string.IsNullOrWhiteSpace(ri.Model)).ToList();
+                if (missingModels.Any())
+                {
+                    messageError = "Please specify the device model for all repairs.";
+                    return;
+                }
+
+                try
+                {
+                    var created = await apiclient.CreateReceiptAsync(receipt);
+                    receiptState.ReceiptProcessed();
+                    // Navigate back to repairs list with success message
+                    // TODO: Fix DetailReceipt page API client issue to show receipt details
+                    navigation.NavigateTo("/repairs/selectrepairs");
+                }
+                catch (ApiException<ValidationProblemDetails> apiexceptionvalidation)
+                {
+                    if (apiexceptionvalidation.Result.Errors.Values != null)
+                    {
+                        messageError = "";
+                        foreach (var errors in apiexceptionvalidation.Result.Errors.Values)
+                        {
+                            messageError = string.Join("(*) ", messageError, string.Join(" (*) ", errors));
+                        }
+                    }
+                }
+                catch (ApiException)
+                {
+                    // Inform user that there was some other error while processing the request
+                    messageError = "Error while processing your request, please try again later!";
+                }
+            }
+        }
+    }
+}

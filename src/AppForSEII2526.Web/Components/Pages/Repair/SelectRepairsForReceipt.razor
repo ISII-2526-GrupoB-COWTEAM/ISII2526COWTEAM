@@ -1,0 +1,252 @@
+@page "/repairs/selectrepairs"
+
+@using Microsoft.AspNetCore.Authorization
+@using AppForSEII2526.Web.API
+@using System.Linq
+
+@inject AppForSEII2526APIClient apiclient
+@inject ILogger<SelectRepairsForReceipt> logger
+@inject ReceiptStateContainer receiptState
+@inject NavigationManager navigation
+
+
+<h3>Select Repairs For Receipt</h3>
+
+<div class="container-fluid">
+
+    <!-- Zona de errores -->
+    <div class="row alert alert-danger" role="alert" hidden="@HideErrors">
+        <p id="ErrorsShown">Errors: @errors</p>
+    </div>
+
+    <div class="row">
+        <!-- Columna izquierda: listado y filtros -->
+        <div class="col-8">
+            <div class="row">
+                <!-- Filtro por nombre de reparación -->
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Repair Name</span>
+                        <input type="text"
+                               id="inputRepairName"
+                               @bind="repairName"
+                               class="form-control"
+                               placeholder="Repair name"
+                               aria-label="Repair name"
+                               aria-describedby="basic-addon1">
+                    </div>
+                </div>
+
+                <!-- Filtro por escala -->
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon-scale">Scale</span>
+                        <input type="text"
+                               id="inputScale"
+                               @bind="scaleSelected"
+                               class="form-control"
+                               placeholder="Scale (lujo, media, básica)"
+                               aria-label="Scale"
+                               aria-describedby="basic-addon-scale">
+                    </div>
+                </div>
+
+
+                <!-- Botón de búsqueda -->
+                <div class="col">
+                    <button type="button"
+                            class="btn btn-primary"
+                            @onclick="SearchRepairs"
+                            id="searchRepairs">
+                        Search repairs
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabla de reparaciones -->
+            <div class="row">
+                @if (repairs == null)
+                {
+                    <p>Loading repairs...</p>
+                }
+                else
+                {
+                    <div class="mh-100 table-responsive">
+                        <table class="table table-condensed table-hover" id="TableOfRepairs">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Scale</th>
+                                    <th>Description</th>
+                                    <th>Cost</th>
+                                    <th>Add</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var repair in repairs)
+                                {
+                                    <tr id="RepairData_@repair.Name">
+                                        <td>@repair.Name</td>
+                                        <td>@repair.Scale</td>
+                                        <td>@repair.Description</td>
+                                        <td>@repair.Cost€</td>
+                                        <td>
+                                            <button class="btn btn-outline-secondary"
+                                                    id="repairToReceipt_@repair.Name"
+                                                    @onclick="@(() => AddRepair(repair))">
+                                                Add
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Columna derecha: carrito de reparaciones -->
+        <div class="col-2" hidden="@HideReceiptCart">
+            <div class="row">
+                <h3>Repair Cart</h3>
+            </div>
+
+            @if (receipt.ReceiptItems != null)
+            {
+                @foreach (ReceiptItemDTO item in receipt.ReceiptItems)
+                {
+                    <div class="row mb-1">
+                        <button type="button"
+                                class="btn btn-light w-100 text-start"
+                                id="removeRepair_@item.Name"
+                                @onclick="@(() => RemoveReceiptItem(item))">
+                            x @item.Name - @item.Cost€
+                        </button>
+                    </div>
+                }
+            }
+
+            <div class="row mt-2">
+                <strong>Total: @receiptState.TotalCost€</strong>
+            </div>
+
+            <div class="row mt-3">
+                <button type="button"
+                        class="btn btn-primary"
+                        id="contractRepairsButton"
+                        @onclick="@GoToCreateRepair">
+                    Proceed to contract
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    // Estado de filtros
+    private string repairName { get; set; }
+    private string scaleSelected { get; set; } = string.Empty;
+
+    // Lista de reparaciones devueltas por la API
+    private ICollection<RepairDTO> repairs;
+
+    // Errores
+    private string errors = "";
+    private bool HideErrors => string.IsNullOrEmpty(errors);
+
+    // Carrito: usamos el estado compartido del recibo
+    private ReceiptForCreate receipt => receiptState.Receipt;
+
+    // Visibilidad del carrito
+    private bool HideReceiptCart =>
+        receipt.ReceiptItems == null || receipt.ReceiptItems.Count == 0;
+
+    // Añadir reparación al carrito
+    private void AddRepair(RepairDTO repair)
+    {
+        if (receipt.ReceiptItems == null)
+        {
+            receipt.ReceiptItems = new List<ReceiptItemDTO>();
+        }
+
+        var existing = receipt.ReceiptItems
+            .FirstOrDefault(r => r.RepairID == repair.Id);
+
+        if (existing == null)
+        {
+            receipt.ReceiptItems.Add(new ReceiptItemDTO
+            {
+                RepairID = repair.Id,
+                Name = repair.Name,
+                Scale = repair.Scale,
+                Cost = (double)repair.Cost,
+                Model = string.Empty // El modelo se rellenará en CreateRepair
+            });
+        }
+
+        StateHasChanged();
+    }
+
+    // Eliminar reparación del carrito
+    private void RemoveReceiptItem(ReceiptItemDTO item)
+    {
+        if (receipt.ReceiptItems == null) return;
+
+        receipt.ReceiptItems.Remove(item);
+        StateHasChanged();
+    }
+
+    // Búsqueda de reparaciones
+    public async Task SearchRepairs()
+    {
+        var nameFilter = string.IsNullOrWhiteSpace(repairName) ? null : repairName;
+        var scaleFilter = string.IsNullOrWhiteSpace(scaleSelected) ? null : scaleSelected;
+
+        try
+        {
+            repairs = await apiclient.GetRepairsAsync(nameFilter, scaleFilter);
+
+            if (repairs == null || !repairs.Any())
+            {
+                errors = "There are no repairs available.";
+                repairs = new List<RepairDTO>();
+            }
+            else
+            {
+                errors = "";
+            }
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError($"{DateTime.Now} Error getting repairs: {ex}");
+            errors = "Error while connecting to the system";
+        }
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Inicializar carrito si hace falta
+        if (receipt.ReceiptItems == null)
+        {
+            receipt.ReceiptItems = new List<ReceiptItemDTO>();
+        }
+
+        // Carga inicial de reparaciones
+        await SearchRepairs();
+    }
+
+    private void GoToCreateRepair()
+    {
+        if (HideReceiptCart)
+        {
+            // Si no hay nada en el carrito, no tiene sentido continuar
+            return;
+        }
+
+        navigation.NavigateTo("/repairs/createrepair");
+    }
+}

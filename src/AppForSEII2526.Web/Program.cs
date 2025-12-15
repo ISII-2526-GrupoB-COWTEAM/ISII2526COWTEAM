@@ -46,6 +46,7 @@ builder.Services.AddScoped<AppForSEII2526APIClient>(sp => new AppForSEII2526APIC
 //adding an In-memory state container service
 
 builder.Services.AddScoped<PurchaseStateContainer>();
+builder.Services.AddScoped<ReceiptStateContainer>();
 
 var app = builder.Build();
 
