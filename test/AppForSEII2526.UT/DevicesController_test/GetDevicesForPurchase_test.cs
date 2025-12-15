@@ -91,10 +91,10 @@ namespace AppForSEII2526.UT.DevicesController_test
         {
             var dtoList = new List<DeviceForPurchaseDTO>()
             {
-                new DeviceForPurchaseDTO(5,  "HP ProBook 450",       "Negro",  999.99m,  "ProBook",  "HP"),
-                new DeviceForPurchaseDTO(6,  "Lenovo ThinkPad X1",   "Gris",  1899.99m,  "ThinkPad", "Lenovo"),
-                new DeviceForPurchaseDTO(9,  "Lenovo ThinkPad E15",  "Azul",   699.99m,  "ThinkPad", "Lenovo"),
-                new DeviceForPurchaseDTO(11, "Acer Predator Helios", "Negro", 1499.99m,  "Predator", "Acer"),
+                new DeviceForPurchaseDTO(5,  "HP ProBook 450",       "Negro",  999.99m,  "ProBook",  "HP", 2025),
+                new DeviceForPurchaseDTO(6,  "Lenovo ThinkPad X1",   "Gris",  1899.99m,  "ThinkPad", "Lenovo", 2025),
+                new DeviceForPurchaseDTO(9,  "Lenovo ThinkPad E15",  "Azul",   699.99m,  "ThinkPad", "Lenovo", 2025),
+                new DeviceForPurchaseDTO(11, "Acer Predator Helios", "Negro", 1499.99m,  "Predator", "Acer", 2025),
             };
 
             var todos = dtoList.OrderBy(d => d.Name).ThenBy(d => d.Brand).ToList();

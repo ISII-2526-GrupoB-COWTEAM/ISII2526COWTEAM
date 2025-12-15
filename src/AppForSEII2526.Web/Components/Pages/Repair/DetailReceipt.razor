@@ -1,0 +1,114 @@
+@page "/repairs/detailreceipt"
+
+@using AppForSEII2526.Web.API
+@inject AppForSEII2526APIClient apiclient
+@inject ILogger<DetailReceipt> logger
+@inject NavigationManager navigation
+
+<h3>Receipt Detail</h3>
+
+@if (receipt == null)
+{
+    <p>Loading receipt details...</p>
+}
+else
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Customer Information</h4>
+                <p><strong>Name:</strong> @receipt.ApplicationUserName</p>
+                <p><strong>Surname:</strong> @receipt.ApplicationUserSurname</p>
+                <p><strong>Delivery Address:</strong> @receipt.DeliveryAddress</p>
+            </div>
+            <div class="col-md-6">
+                <h4>Receipt Information</h4>
+                <p><strong>Receipt ID:</strong> @receipt.Id</p>
+                <p><strong>Date:</strong> @receipt.DateOfReceipt.ToString("dd/MM/yyyy")</p>
+                <p><strong>Total Price:</strong> @receipt.TotalPrice €</p>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <h4>Repairs Contracted</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Repair Name</th>
+                        <th>Scale</th>
+                        <th>Device Model</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in receipt.ReceiptItems)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.Scale</td>
+                            <td>@item.Model</td>
+                            <td>@item.Cost €</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col">
+                <button class="btn btn-primary" @onclick="GoBack">Back to Repairs</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int ReceiptID { get; set; }
+
+    private ReceiptDetailDTO? receipt;
+    private string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (ReceiptID <= 0)
+            {
+                errorMessage = "Invalid receipt ID.";
+                return;
+            }
+
+            var receipts = await apiclient.GetReceiptDetailAsync(ReceiptID);
+            receipt = receipts?.FirstOrDefault();
+            
+            if (receipt == null)
+            {
+                errorMessage = "Receipt not found.";
+            }
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError($"Error loading receipt {ReceiptID}: {ex.Message}");
+            errorMessage = $"Error loading receipt details: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"Unexpected error loading receipt {ReceiptID}: {ex.Message}");
+            errorMessage = "An unexpected error occurred. Please try again later.";
+        }
+    }
+
+    private void GoBack()
+    {
+        navigation.NavigateTo("/repairs/selectrepairs");
+    }
+}
