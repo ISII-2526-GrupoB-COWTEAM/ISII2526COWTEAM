@@ -138,8 +138,7 @@
                 {
                     var created = await apiclient.CreateReviewAsync(review);
                     reviewState.ReviewProcessed();
-                    // Navigate back to select devices page - detail endpoint not available
-                    navigation.NavigateTo("/reviews/selectdevicesforreview");
+                    navigation.NavigateTo($"/reviews/detailreview/?ReviewID={created.Id}");
                 }
                 catch (ApiException<ValidationProblemDetails> apiexceptionvalidation)
                 {
