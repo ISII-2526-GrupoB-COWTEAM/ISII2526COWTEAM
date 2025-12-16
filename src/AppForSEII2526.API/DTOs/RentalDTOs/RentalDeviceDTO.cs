@@ -5,7 +5,7 @@ namespace AppForSEII2526.API.DTOs.RentalDTO
 {
     public class RentalDeviceDTO
     {
-        public RentalDeviceDTO(int deviceID, string name, string brand, string color, int year, string model, double priceForRent)
+        public RentalDeviceDTO(int deviceID, string name, string brand, string color, int year, string model, double priceForRent, int quantity)
         {
             DeviceID = deviceID;
             Name = name;
@@ -14,6 +14,7 @@ namespace AppForSEII2526.API.DTOs.RentalDTO
             Year = year;
             Model = model;
             PriceForRent = priceForRent;
+            Quantity = quantity;
         }
         [Required]
         public int DeviceID { get; set; }
@@ -29,6 +30,8 @@ namespace AppForSEII2526.API.DTOs.RentalDTO
         public string Model { get; set; }
         [Required]
         public double PriceForRent { get; set; }
+        [Required]
+        public int Quantity { get; set; }
 
         public override bool Equals(object? obj)
         {
@@ -39,12 +42,13 @@ namespace AppForSEII2526.API.DTOs.RentalDTO
                    Color == dTO.Color &&
                    Year == dTO.Year &&
                    Model == dTO.Model &&
-                   PriceForRent == dTO.PriceForRent;
+                   PriceForRent == dTO.PriceForRent &&
+                   Quantity == dTO.Quantity;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(DeviceID, Name, Brand, Color, Year, Model, PriceForRent);
+            return HashCode.Combine(DeviceID, Name, Brand, Color, Year, Model, PriceForRent, Quantity);
         }
 
     }
