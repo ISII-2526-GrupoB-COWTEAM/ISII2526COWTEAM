@@ -25,6 +25,7 @@ namespace AppForSEII2526.UT.RentalController_test
         private const string _deviceModel = "Iphone 11";
         private const int _deviceYear = 2019;
         private const double _devicePriceForRent = 19.0;
+        private const int _deviceQuantity = 1;
 
         public PostRental_test()
         {
@@ -72,7 +73,8 @@ namespace AppForSEII2526.UT.RentalController_test
                     _deviceColor,
                     _deviceYear,
                     _deviceModel,
-                    _devicePriceForRent)
+                    _devicePriceForRent,
+                    _deviceQuantity)
             };
 
             var invalidAddress = new RentalForCreateDTO(
@@ -136,7 +138,8 @@ namespace AppForSEII2526.UT.RentalController_test
                         "Color",
                         2024,
                         "Modelo",
-                        10)
+                        10,
+                        1)
                 });
 
             var allTests = new List<object[]>
@@ -191,7 +194,8 @@ namespace AppForSEII2526.UT.RentalController_test
                     _deviceColor,
                     _deviceYear,
                     _deviceModel,
-                    _devicePriceForRent)
+                    _devicePriceForRent,
+                    _deviceQuantity)
             };
 
             var rentalDTO = new RentalForCreateDTO(
