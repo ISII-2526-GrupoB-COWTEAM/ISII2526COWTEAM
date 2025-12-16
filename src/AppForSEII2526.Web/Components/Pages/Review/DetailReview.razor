@@ -1,0 +1,121 @@
+@page "/reviews/detailreview"
+
+@using AppForSEII2526.Web.API
+@inject AppForSEII2526APIClient apiclient
+@inject ILogger<DetailReview> logger
+@inject NavigationManager navigation
+@using System.Net.Http.Json
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@inject HttpClient Http
+
+<h3>Detail Review</h3>
+
+@if (review == null)
+{
+    if (error == null)
+    {
+         <p>Loading...</p>
+    }
+    else
+    {
+        <p>@error</p>
+    }
+}
+else
+{
+    <table class="table table-borderless table-sm">
+        <tr>
+             <th>User</th>
+             <td>@review.ApplicationUserName</td>
+        </tr>
+         <tr>
+             <th>Country</th>
+             <td>@review.ApplicationUserCountry</td>
+        </tr>
+         <tr>
+             <th>Title</th>
+             <td>@review.ReviewTitle</td>
+        </tr>
+        <tr>
+             <th>Date</th>
+             <td>@review.ReviewDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
+        </tr>
+        <tr>
+             <th>Overall Rating</th>
+             <td>@review.OverallRating</td>
+        </tr>
+    </table>
+
+    <h4>Review Items</h4>
+
+    <table class="table" id="ReviewItems">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Model</th>
+                <th>Rating</th>
+                <th>Comments</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in review.ReviewItems)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Model</td>
+                    <td>@item.Rating</td>
+                    <td>@item.Comments</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int ReviewID { get; set; }
+
+    private ReviewDetailDTO? review;
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ReviewID <= 0)
+        {
+            error = "Missing or invalid ReviewID in the URL.";
+            return;
+        }
+
+        try
+        {
+            // WORKAROUND: The generated API client expects an Array (ICollection) because of Swagger definition,
+            // but the actual Backend returns a single Object. This causes a deserialization error.
+            // We manually call the API and deserialize as a single object.
+            
+            string apiUrl = Configuration["COW_API"];
+            string requestUrl = $"{apiUrl}/api/Reviews/GetReview?id={ReviewID}";
+            
+            // We use the injected HttpClient. Since it might not have the BaseAddress set if it's the default client,
+            // we use the full URL constructed from IConfiguration.
+             var response = await Http.GetAsync(requestUrl);
+
+             if (response.IsSuccessStatusCode)
+             {
+                 // Try deserializing as single object
+                 review = await response.Content.ReadFromJsonAsync<ReviewDetailDTO>();
+                 error = null;
+             }
+             else
+             {
+                 error = $"Error loading review (id={ReviewID}). Status: {response.StatusCode}";
+             }
+        }
+        catch (Exception ex)
+        {
+             review = null;
+             error = $"Unexpected error: {ex.Message}";
+        }
+    }
+}
