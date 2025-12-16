@@ -1,5 +1,4 @@
-﻿<h3>DetailRental</h3>
-@page "/rental/detailrental"
+﻿@page "/rental/detailrental"
 
 @using AppForSEII2526.Web.API
 @using Microsoft.AspNetCore.Authorization
@@ -7,7 +6,7 @@
 
 <h3>DetailRental</h3>
 
-@attribute [Authorize]
+
 
 @if (rental == null)
 {
@@ -44,7 +43,7 @@ else
             <tr>
                 <th scope="col">Model</th>
                 <th scope="col">Price for Renting</th>
-                <th scope="col">Quantity</th>
+                @* <th scope="col">Quantity</th> *@
             </tr>
         </thead>
         <tbody>
@@ -53,7 +52,7 @@ else
                 <tr id="RentalDevice_@device.Model">
                     <td>@device.Model</td>
                     <td>@device.PriceForRent €</td>
-                    <td>@device.Quantity</td>
+                    @* <td>@device.Quantity</td> *@
                 </tr>
             }
         </tbody>
