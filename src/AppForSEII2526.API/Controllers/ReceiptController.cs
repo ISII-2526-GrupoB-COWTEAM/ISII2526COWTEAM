@@ -23,7 +23,7 @@ namespace AppForSEII2526.API.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(IList<ReceiptDetailDTO>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ReceiptDetailDTO), (int)HttpStatusCode.OK)]
         public async Task<ActionResult> GetReceiptDetail(int id) {
 
             var receipt = await _context.Receipt

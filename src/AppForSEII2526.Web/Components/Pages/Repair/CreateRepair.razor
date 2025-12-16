@@ -167,9 +167,7 @@
                 {
                     var created = await apiclient.CreateReceiptAsync(receipt);
                     receiptState.ReceiptProcessed();
-                    // Navigate back to repairs list with success message
-                    // TODO: Fix DetailReceipt page API client issue to show receipt details
-                    navigation.NavigateTo("/repairs/selectrepairs");
+                    navigation.NavigateTo($"/repairs/detailreceipt/?ReceiptID={created.Id}");
                 }
                 catch (ApiException<ValidationProblemDetails> apiexceptionvalidation)
                 {

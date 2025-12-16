@@ -39,7 +39,7 @@ namespace AppForSEII2526.Web
                     PurchasePrice = device.Price,
                     Quantity = 1,
                     Description = null
-                    
+
                 }
             );
 
