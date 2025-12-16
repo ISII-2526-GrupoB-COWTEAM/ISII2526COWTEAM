@@ -1,12 +1,14 @@
 ﻿<h3>SelectDevicesForRental</h3>
 @page "/rental/selectdevicesforrental"
 
+@using Microsoft.AspNetCore.Authorization
 @using AppForSEII2526.Web.API
 @inject AppForSEII2526APIClient apiclient
 @inject ILogger<SelectDevicesForRental> logger
 @inject RentalStateContainer rentalState
 @inject NavigationManager navigation
 
+@attribute [Authorize]
 <h3>Select Devices For Rental</h3>
 <div class="container-fluid">
     <div class="row">
