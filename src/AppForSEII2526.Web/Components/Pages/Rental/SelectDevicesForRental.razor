@@ -1,0 +1,135 @@
+﻿<h3>SelectDevicesForRental</h3>
+@page "/rental/selectdevicesforrental"
+
+@using Microsoft.AspNetCore.Authorization
+@using AppForSEII2526.Web.API
+@inject AppForSEII2526APIClient apiclient
+@inject ILogger<SelectDevicesForRental> logger
+@inject RentalStateContainer rentalState
+@inject NavigationManager navigation
+
+@attribute [Authorize]
+<h3>Select Devices For Rental</h3>
+<div class="container-fluid">
+    <div class="row">
+        <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+            <p id="ErrorsShown">Errors: @errors</p>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="row">
+                    <p>here i will show the filters</p>
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">Title</span>
+                            <input type="text" id="inputTitle" @bind=deviceModel class="form-control" placeholder="Model" aria-label="Model" aria-describedby="basic-addon1">
+                        </div>
+
+                    </div>
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">Genre</span>
+                            <input type="text" id="inputGenre" @bind=devicePrice class="form-control" placeholder="Price" aria-label="Price" aria-describedby="basic-addon1">
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <button type="button" class="btn btn-primary" @onclick=@SearchDevices id="searchDevices">Search devices</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>here i will show the list of devices</p>
+                    @if (devices == null) {
+                        <p>Loading devices....</p>
+                    }
+                    else
+                    {
+                        <p>number of devices @devices.Count</p>
+                        <div class="mh-100 table-responsive">
+                            <table class="table table-condensed table-hover" id="TableOfMovies">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Model</th>
+                                        <th>Price For Renting</th>
+                                        <th>Rent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var device in devices)
+                                    {
+                                        <tr id="DeviceData_@device.Name">
+                                            <td>@device.Name</td>
+                                            <td>@device.Model</td>
+                                            <td>@device.PriceForRent</td>
+                                            <td>
+                                                <button class="btn btn-outline-secondary" id="deviceToRent_@device.Name" @onclick="@(() => AddDevice(device))">Add</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-2" hidden="@hideRentingCart">
+                <div class="row">
+                    <h3>Shopping Cart</h3>
+                </div>
+                @foreach (RentalDeviceDTO device in rental.RentalDevices)
+                {
+                    <div class="row">
+                        <button type="button" class="btn btn-light" id="removeDevice_@device.Name" @onclick="@(() => RemoveRentalDevice(device))">x @device.Name - @device.PriceForRent€</button>
+                    </div>
+                }
+                <div class="row">
+                    <button type="button" class="btn btn-primary" id="purchaseDeviceButton" @onclick=@RentDevices>Rent devices</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool hideRentingCart { get { return rental.RentalDevices.Count == 0; } }
+    private ICollection<DeviceForRentalDTO> devices;
+    private bool hideErrors { get { return errors.Length == 0; } }
+    private string errors = "";
+    private string deviceModel { get; set; }
+    private double devicePrice { get; set; }
+
+    private RentalForCreateDTO rental => rentalState.Rental;
+
+    private bool hiddenRentingCart = true;
+
+    private void AddDevice(DeviceForRentalDTO device)
+    {
+        rentalState.AddDeviceToRental(device);
+    }
+
+    private void RemoveRentalDevice(RentalDeviceDTO device)
+    {
+        rentalState.RemoveRentalDeviceToRent(device);
+        if (rental.RentalDevices.Count == 0) hiddenRentingCart = true;
+    }
+
+    public async void SearchDevices()
+    {
+        try
+        {
+            devices = await apiclient.GetDevicesForRentalAsync(deviceModel, devicePrice);
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError($"{DateTime.Now} Error: {ex}");
+            errors = "Error while connecting to the system";
+        }
+        StateHasChanged();
+    }
+    private void RentDevices()
+    {
+        navigation.NavigateTo("/rentals/createrental");
+    }
+
+}
