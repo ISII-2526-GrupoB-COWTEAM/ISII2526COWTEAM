@@ -1,4 +1,4 @@
-﻿<h3>SelectDevicesForRental</h3>
+﻿
 @page "/rental/selectdevicesforrental"
 
 @using Microsoft.AspNetCore.Authorization
@@ -8,7 +8,7 @@
 @inject RentalStateContainer rentalState
 @inject NavigationManager navigation
 
-@attribute [Authorize]
+
 <h3>Select Devices For Rental</h3>
 <div class="container-fluid">
     <div class="row">
@@ -21,14 +21,14 @@
                     <p>here i will show the filters</p>
                     <div class="col">
                         <div class="input-group mb-3">
-                            <span class="input-group-text" id="basic-addon1">Title</span>
+                            <span class="input-group-text" id="basic-addon1">Model</span>
                             <input type="text" id="inputTitle" @bind=deviceModel class="form-control" placeholder="Model" aria-label="Model" aria-describedby="basic-addon1">
                         </div>
 
                     </div>
                     <div class="col">
                         <div class="input-group mb-3">
-                            <span class="input-group-text" id="basic-addon1">Genre</span>
+                            <span class="input-group-text" id="basic-addon1">Price</span>
                             <input type="text" id="inputGenre" @bind=devicePrice class="form-control" placeholder="Price" aria-label="Price" aria-describedby="basic-addon1">
                         </div>
                     </div>
@@ -97,7 +97,7 @@
     private bool hideErrors { get { return errors.Length == 0; } }
     private string errors = "";
     private string deviceModel { get; set; }
-    private double devicePrice { get; set; }
+    private double? devicePrice { get; set; }
 
     private RentalForCreateDTO rental => rentalState.Rental;
 
@@ -129,7 +129,7 @@
     }
     private void RentDevices()
     {
-        navigation.NavigateTo("/rentals/createrental");
+        navigation.NavigateTo("/rental/createrental");
     }
 
 }

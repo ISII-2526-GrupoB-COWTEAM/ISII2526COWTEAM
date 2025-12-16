@@ -1,0 +1,220 @@
+﻿@page "/rental/createrental"
+@inject NavigationManager navigation
+@using AppForSEII2526.Web.Components.Shared
+@using AppForSEII2526.Web.API
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject AppForSEII2526APIClient apiclient
+@inject ILogger<CreateRental> logger
+@inject RentalStateContainer rentalState
+
+
+<h3>Create Rental</h3>
+@* rental is the object that will be edited thanks to the form *@
+<EditForm Model="rental" OnValidSubmit="OpenDialog">
+    <div class="row">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="row alert alert-danger" />
+    </div>
+    <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+        <p id="ErrorsShown">Errors: @messageError</p>
+    </div>
+    <div class="row g-3">
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="rental.Name" class="form-control" id="Name" />
+                <label for="Name">Name </label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="rental.Surname" class="form-control" id="Surname" />
+                <label for="Surname">Surname </label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="rental.DeliveryAddress" class="form-control" id="DeliveryAddress" />
+                <label for="DeliveryAddress">Delivery Address</label>
+            </div>
+        </div>
+    </div>
+    <div class="row g-2">
+        <div class="col-md">
+            <div class="form-floating">
+                @*a dropdown for selecting the payment method*@
+                <InputSelect class="form-select" @bind-Value="@rental.PaymentMethod" id="PaymentMethod">
+                    @foreach (var method in Enum.GetValues(typeof(PaymentMethodTypes)))
+                    {
+                        <option value="@method">@method</option>
+                    }
+                </InputSelect>
+                <label for="PaymentMethod">Payment Method</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating">
+                @*this button will be used to ask the user if he want to proceed to rent the devices*@
+                <button class="btn btn-primary" type="submit" id="Submit">
+                    Rent your devices
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-2 mt-2">
+        <div class="col-md">
+             <div class="form-floating">
+                <InputDate @bind-Value="rental.RentalDateFrom" class="form-control" id="DateFrom" />
+                <label for="DateFrom">Date From</label>
+            </div>
+        </div>
+        <div class="col-md">
+             <div class="form-floating">
+                <InputDate @bind-Value="rental.RentalDateTo" class="form-control" id="DateTo" />
+                <label for="DateTo">Date To</label>
+            </div>
+        </div>
+    </div>
+
+    <h4>Rental detail</h4>
+    <p>
+        <b>Total price:</b> @TotalCost €
+        <button class="btn btn-outline-primary" type="button" @onclick="ModifyRentalItems" id="ModifyDevices">
+            Modify devices
+        </button>
+    </p>
+    
+    <div class="mh-100 table-responsive">
+        <table class="table table-condensed table-hover" id="TableOfRentalItems">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Model</th>
+                    <th>Price For Renting</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in rental.RentalDevices) {
+                    <tr id="DeviceData_@item.Name">
+                        <td>@item.Name</td>
+                        <td>@item.Model</td>
+                        <td>@item.PriceForRent</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</EditForm>
+@*a modal popup dialog for checking if user wants to proceed to rent*@
+@if (DialogIsOpen)
+{
+    <Dialog Caption="Rental devices"
+    Message="Do you want to proceed to rent the selected devices?"
+    OnClose="@OnDialogClose"
+    Type=Dialog.Category.SaveNot>
+    </Dialog>
+}
+
+@code {
+    private string messageError = "";
+    private bool hideErrors { get { return messageError.Length == 0; } }
+    private bool DialogIsOpen;
+    
+    private decimal TotalCost { 
+        get {
+             // rental.TotalPrice is calculated in the DTO as devices.Sum(ri => ri.PriceForRent * NumberOfDays);
+             // However, NumberOfDays depends on DateTo - DateFrom. 
+             // The DTO has logic for this, let's trust the DTO logic if it handles dynamic updates, 
+             // OR re-calculate here for UI display like the reference.
+             // Reference: double price = rental.RentalItems.Sum(ri => ri.PriceForRenting * days);
+             
+             int days = (rental.RentalDateTo - rental.RentalDateFrom).Days;
+             // Avoid negative days in display
+             if (days < 0) days = 0;
+             double price = rental.RentalDevices.Sum(ri => ri.PriceForRent * days);
+             return Convert.ToDecimal(price);
+        }
+    }
+    
+    private void ModifyRentalItems() {
+        navigation.NavigateTo("/rental/selectdevicesforrental");
+    }
+    
+    private RentalForCreateDTO rental => rentalState.Rental;
+    
+    private void OpenDialog()
+    {
+        DialogIsOpen = true;
+    }
+    
+    private async Task OnDialogClose(bool isOk) {
+        DialogIsOpen = false;
+        if (isOk) {
+            // Process the data introduced by the user if they are valid
+            if (rental.RentalDevices.Count > 0) {
+                try {
+                     // Ensure RentalDate is set
+                     rental.RentalDate = DateTime.Now;
+                     
+                    var rented = await apiclient.CreateRentalAsync(rental);
+                    rentalState.RentalProcessed();
+                    // Assuming 'MyRentals' or details page exists using GetRental logic, similar to repairs/detailreceipt
+                    // The reference used: navigation.NavigateTo($"/rental/detailrental/?RentalID={rented.Id}");
+                    // But we don't have DetailRental page yet? 
+                    // Wait, listing showed DetailRental.razor!
+                    navigation.NavigateTo($"/rental/detailrental/?RentalID={rented.Id}");
+                }
+                catch (ApiException<ValidationProblemDetails> apiexceptionvalidation) {
+                    if (apiexceptionvalidation.Result.Errors != null) {
+                        messageError = "";
+                        // Errors structure might be Dictionary<string, string[]> ?
+                        // Reference used: apiexceptionvalidation.Result.Errors.Values
+                        foreach (var errors in apiexceptionvalidation.Result.Errors.Values)
+                            messageError = string.Join("(*) ", messageError, string.Join(" (*) ", errors));
+                    }
+                }
+                catch (ApiException) {
+                    //we need to inform user that there was some other error while processing the request
+                    messageError = "Error while processing your request, please try again later!";
+                }
+            }
+        }
+    }
+    
+    protected override async Task OnInitializedAsync() {
+        if (rental.RentalDevices == null || !rental.RentalDevices.Any())
+        {
+             // navigation.NavigateTo("/rental/selectdevicesforrental");
+        }
+        
+        // Initialize dates if not set
+        if (rental.RentalDateFrom == default) rental.RentalDateFrom = DateTime.Today.AddDays(1);
+        if (rental.RentalDateTo == default) rental.RentalDateTo = DateTime.Today.AddDays(2);
+
+        if (authenticationState is not null) {
+            var authState = await authenticationState;
+            var user = authState?.User;
+            if (user is not null) {
+                if (user.Identity is not null && user.Identity.IsAuthenticated) {
+                    
+                     // Attempt to grab from claims.
+                     var nameClaim = user.FindFirst(c => c.Type == "Name") ?? user.FindFirst(System.Security.Claims.ClaimTypes.Name);
+                     var surnameClaim = user.FindFirst(c => c.Type == "Surname") ?? user.FindFirst(System.Security.Claims.ClaimTypes.Surname);
+
+                     if (nameClaim != null) rental.Name = nameClaim.Value;
+                     if (surnameClaim != null) rental.Surname = surnameClaim.Value;
+                }
+            }
+            // Ensure properties are not null
+            rental.Name = rental.Name ?? "";
+            rental.Surname = rental.Surname ?? "";
+            rental.DeliveryAddress = rental.DeliveryAddress ?? "";
+        }
+    }
+    
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+ }
