@@ -111,7 +111,7 @@ namespace AppForSEII2526.API.Controllers
                     DeliveryAddress = purchaseForCreate.DeliveryAddress,
                     PaymentMethod = purchaseForCreate.PaymentMethod,
                     ApplicationUser = user,
-                    PurchaseDate = purchaseForCreate.PurchaseDate,
+                    PurchaseDate = DateTime.Now,
                     PurchaseItems = new List<PurchaseItem>()
                 };
 
