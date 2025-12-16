@@ -53,7 +53,7 @@ else
                 <tr id="RentalDevice_@device.Model">
                     <td>@device.Model</td>
                     <td>@device.PriceForRent €</td>
-                    <td>@device.</td>
+                    <td>@device.Quantity</td>
                 </tr>
             }
         </tbody>
@@ -78,7 +78,26 @@ else
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (RentalID <= 0)
+        {
+            error = "Missing or invalid RentalID in the URL.";
+            return;
+        }
 
+        try
+        {
+            rental = await apiclient.GetRentalAsync(RentalID);
+            error = null;
+        }
+        catch (ApiException ex)
+        {
+            rental = null;
+            error = $"Error loading rental (id={RentalID}). Status: {ex.StatusCode}";
+        }
+    }
+    /*
     protected override async Task OnInitializedAsync()
     {
 
@@ -114,4 +133,5 @@ else
 
 
     }
+    */
 }

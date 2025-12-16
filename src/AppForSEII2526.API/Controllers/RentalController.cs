@@ -50,7 +50,8 @@ namespace AppForSEII2526.API.Controllers
                         rd.Device.Color,
                         rd.Device.Year,
                         rd.Device.Model.NameModel,
-                        rd.Price
+                        rd.Price,
+                        rd.Quantity
                     )).ToList(),
                     r.PaymentMethod
                 ))
