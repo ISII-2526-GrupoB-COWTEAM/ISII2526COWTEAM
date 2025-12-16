@@ -37,6 +37,34 @@ else
             <td id="RentalPeriod">@rental.RentalDateFrom.DateTime.ToString("dd/MM/yyyy") - @rental.RentalDateTo.DateTime.ToString("dd/MM/yyyy")</td>
         </tr>
     </table>
+    <h4>Rented Devices</h4>
+
+    <table class="table" id="RentedDevicees">
+        <thead>
+            <tr>
+                <th scope="col">Model</th>
+                <th scope="col">Price for Renting</th>
+                <th scope="col">Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (RentalDeviceDTO device in rental.RentalDevices)
+            {
+                <tr id="RentalDevice_@device.Model">
+                    <td>@device.Model</td>
+                    <td>@device.PriceForRent €</td>
+                    <td>@device.</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                 <th scope="row" colspan="2" class="text-end">Total Price</th>
+                 <td id="TotalPrice">@rental.TotalPrice €</td>
+            </tr>
+        </tfoot>
+
+    </table>
 
 }
 
