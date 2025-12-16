@@ -830,6 +830,10 @@
           "brand": {
             "type": "string",
             "nullable": true
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -985,6 +989,10 @@
           "quantity": {
             "type": "integer",
             "format": "int32"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
