@@ -5,12 +5,13 @@
 @inject AppForSEII2526APIClient apiclient
 @inject ILogger<SelectDevicesForRental> logger
 @inject RentalStateContainer rentalState
+@inject NavigationManager navigation
 
 <h3>Select Devices For Rental</h3>
 <div class="container-fluid">
     <div class="row">
-        <div class="row" hidden="@hideErrors">
-            <p>here i will show the errors</p>
+        <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+            <p id="ErrorsShown">Errors: @errors</p>
         </div>
         <div class="row">
             <div class="col-8">
@@ -70,14 +71,26 @@
                     }
                 </div>
             </div>
-            <div class="col-2">
-                <p>here i will show the renting cart</p>
+            <div class="col-2" hidden="@hideRentingCart">
+                <div class="row">
+                    <h3>Shopping Cart</h3>
+                </div>
+                @foreach (RentalDeviceDTO device in rental.RentalDevices)
+                {
+                    <div class="row">
+                        <button type="button" class="btn btn-light" id="removeDevice_@device.Name" @onclick="@(() => RemoveRentalDevice(device))">x @device.Name - @device.PriceForRent€</button>
+                    </div>
+                }
+                <div class="row">
+                    <button type="button" class="btn btn-primary" id="purchaseDeviceButton" @onclick=@RentDevices>Rent devices</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 @code {
+    private bool hideRentingCart { get { return rental.RentalDevices.Count == 0; } }
     private ICollection<DeviceForRentalDTO> devices;
     private bool hideErrors { get { return errors.Length == 0; } }
     private string errors = "";
@@ -88,14 +101,14 @@
 
     private bool hiddenRentingCart = true;
 
-    private void AddDevice(DeviceForRentalDTO movie)
+    private void AddDevice(DeviceForRentalDTO device)
     {
-        rentalState.AddDeviceToRental(movie);
+        rentalState.AddDeviceToRental(device);
     }
 
-    private void RemoveRentalItem(RentalDeviceDTO item)
+    private void RemoveRentalDevice(RentalDeviceDTO device)
     {
-        rentalState.RemoveRentalDeviceToRent(item);
+        rentalState.RemoveRentalDeviceToRent(device);
         if (rental.RentalDevices.Count == 0) hiddenRentingCart = true;
     }
 
@@ -112,4 +125,9 @@
         }
         StateHasChanged();
     }
+    private void RentDevices()
+    {
+        navigation.NavigateTo("/rentals/createrental");
+    }
+
 }
