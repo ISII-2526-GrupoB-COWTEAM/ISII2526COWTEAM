@@ -133,6 +133,13 @@
                       messageError = "Please ensure all items have a rating between 1 and 5.";
                       return;
                  }
+                 
+                 // Custom validation for Comment format
+                 if (review.ReviewItems.Any(r => string.IsNullOrEmpty(r.Comments) || !r.Comments.StartsWith("Reseña para comentario")))
+                 {
+                      messageError = "Comentario debe comenzar con Reseña para comentario";
+                      return;
+                 }
 
                 try
                 {
