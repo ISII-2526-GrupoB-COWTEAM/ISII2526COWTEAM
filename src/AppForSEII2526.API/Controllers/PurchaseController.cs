@@ -85,8 +85,12 @@ namespace AppForSEII2526.API.Controllers
                 if (purchaseForCreate.PurchaseDevices == null || purchaseForCreate.PurchaseDevices.Count == 0)
                     ModelState.AddModelError("PurchaseDevices", "Error! You must purchase at least one device");
 
-                
-                if (purchaseForCreate.PurchaseDate > DateTime.Today.AddDays(1))
+            // REEVALUACION SPRINT 2 ----------------------------------------------------------------------------------------
+                if (purchaseForCreate.PaymentMethod == PaymentMethodTypes.PayPal)
+                    ModelState.AddModelError("PaymentMethod", "¡Error! Solo aceptamos compras pagadas con Tarjeta de Crédito");
+            //---------------------------------------------------------------------------------------------------------------
+
+            if (purchaseForCreate.PurchaseDate > DateTime.Today.AddDays(1))
                     ModelState.AddModelError("PurchaseDate", "Error! Purchase date cannot be in the far future");
 
                 var user = await _context.ApplicationUser
@@ -98,7 +102,6 @@ namespace AppForSEII2526.API.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(new ValidationProblemDetails(ModelState));
 
-                
                 var deviceNames = purchaseForCreate.PurchaseDevices.Select(pd => pd.Name).ToList();
 
                 var devices = await _context.Device
