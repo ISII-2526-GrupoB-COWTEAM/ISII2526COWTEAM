@@ -3,8 +3,10 @@ using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
 
 
-namespace AppForMovies.UIT.Shared {
-    public class UC_UIT : IDisposable {
+namespace AppForMovies.UIT.Shared
+{
+    public class UC_UIT : IDisposable
+    {
 
         private bool _pipeline = false;
 
@@ -17,20 +19,24 @@ namespace AppForMovies.UIT.Shared {
         protected readonly ITestOutputHelper _output;
 
 
-        public string _URI {
-            get {
+        public string _URI
+        {
+            get
+            {
                 //set url of your web page 
-                return "https://localhost:7083/";
+                return "http://localhost:5063/";
 
             }
         }
 
-        public UC_UIT(ITestOutputHelper output) {
+        public UC_UIT(ITestOutputHelper output)
+        {
 
             //it initializes where the errors will be shown
             _output = output;
 
-            switch (_browser) {
+            switch (_browser)
+            {
                 case "Firefox":
                     SetUp_FireFox4UIT();
                     break;
@@ -50,12 +56,14 @@ namespace AppForMovies.UIT.Shared {
         }
 
 
-        protected void Initial_step_opening_the_web_page() {
+        protected void Initial_step_opening_the_web_page()
+        {
             _driver.Navigate()
                 .GoToUrl(_URI);
         }
 
-        protected void Perform_login(string email, string password) {
+        protected void Perform_login(string email, string password)
+        {
             _driver.Navigate()
                     .GoToUrl(_URI + "Account/Login");
             // _driver.FindElement(By.Id("Input_Email"))
@@ -71,8 +79,10 @@ namespace AppForMovies.UIT.Shared {
         }
 
 
-        protected void SetUp_Chrome4UIT() {
-            var optionsc = new ChromeOptions {
+        protected void SetUp_Chrome4UIT()
+        {
+            var optionsc = new ChromeOptions
+            {
                 PageLoadStrategy = PageLoadStrategy.Normal,
                 AcceptInsecureCertificates = true
             };
@@ -83,8 +93,10 @@ namespace AppForMovies.UIT.Shared {
 
         }
 
-        protected void SetUp_FireFox4UIT() {
-            var optionsff = new FirefoxOptions {
+        protected void SetUp_FireFox4UIT()
+        {
+            var optionsff = new FirefoxOptions
+            {
                 PageLoadStrategy = PageLoadStrategy.Normal,
                 AcceptInsecureCertificates = true
             };
@@ -95,7 +107,8 @@ namespace AppForMovies.UIT.Shared {
 
         }
 
-        protected void SetUp_EdgeFor4UIT() {
+        protected void SetUp_EdgeFor4UIT()
+        {
             //var edgeDriverService = Microsoft.Edge.SeleniumTools.EdgeDriverService.CreateChromiumService();
             //var edgeOptions = new Microsoft.Edge.SeleniumTools.EdgeOptions();
             //edgeOptions.PageLoadStrategy = PageLoadStrategy.Normal;
@@ -104,10 +117,13 @@ namespace AppForMovies.UIT.Shared {
 
             //_driver = new Microsoft.Edge.SeleniumTools.EdgeDriver(edgeDriverService, edgeOptions);
 
-            var optionsEdge = new EdgeOptions {
+            var optionsEdge = new EdgeOptions
+            {
                 PageLoadStrategy = PageLoadStrategy.Normal,
                 AcceptInsecureCertificates = true
             };
+            optionsEdge.AddArgument("--no-sandbox");
+            optionsEdge.AddArgument("--disable-dev-shm-usage");
 
             //For pipelines use this option for hiding the browser
             if (_pipeline) optionsEdge.AddArgument("--headless");
@@ -117,7 +133,8 @@ namespace AppForMovies.UIT.Shared {
         }
 
 
-        public void Dispose() {
+        public void Dispose()
+        {
             _driver.Close();
             _driver.Dispose();
             GC.SuppressFinalize(this);

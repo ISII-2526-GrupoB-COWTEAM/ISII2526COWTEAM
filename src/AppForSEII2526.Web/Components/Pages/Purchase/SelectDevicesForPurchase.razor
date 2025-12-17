@@ -96,7 +96,7 @@
                                         <td>@device.Price€</td>
                                         <td>
                                             <button class="btn btn-outline-secondary"
-                                                    id="deviceToPurchase_@device.Name"
+                                                    id="deviceToPurchase_@device.Id"
                                                     @onclick="@(() => AddDevice(device))">
                                                 Add
                                             </button>
@@ -123,7 +123,7 @@
                     <div class="row mb-1">
                         <button type="button"
                                 class="btn btn-light w-100 text-start"
-                                id="removeDevice_@item.Name"
+                                id="removeDevice_@item.DeviceId"
                                 @onclick="@(() => RemovePurchaseDevice(item))">
                             x @item.Name - @item.PurchasePrice€ (Qty: @item.Quantity)
                         </button>

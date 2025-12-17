@@ -943,7 +943,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": { }
+        "additionalProperties": {}
       },
       "PurchaseDeviceDTO": {
         "required": [
@@ -1025,8 +1025,7 @@
           },
           "name": {
             "minLength": 1,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           "surname": {
             "maxLength": 50,
@@ -1535,7 +1534,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": { }
+        "additionalProperties": {}
       }
     }
   }
