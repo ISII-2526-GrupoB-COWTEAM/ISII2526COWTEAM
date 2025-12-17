@@ -147,6 +147,23 @@
     
     private void OpenDialog()
     {
+        // Reset error
+        messageError = "";
+
+        // Client-side validation: Start Date cannot be in the past (allow Today)
+        if (rental.RentalDateFrom.Date < DateTime.Now.Date)
+        {
+            messageError = "Error: start later than today"; // Matches test expectation fragment "start later than today"
+            return;
+        }
+        
+        // Client-side validation: End Date cannot be before Start Date
+        if (rental.RentalDateTo.Date < rental.RentalDateFrom.Date)
+        {
+             messageError = "Error: End date must be later than Start date"; // Matches test expectation fragment if applicable, or generic logic
+             return;
+        }
+
         DialogIsOpen = true;
     }
     
