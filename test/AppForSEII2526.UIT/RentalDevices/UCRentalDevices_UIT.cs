@@ -56,7 +56,7 @@ namespace AppForSEII2526.UIT.RentalDevices
             
             // Create Rental Form
             createPO.SetName("Carlos");
-            createPO.SetSurname("García-Fernández");
+            createPO.SetSurname("García Fernández");
             createPO.SetAddress("Calle de la Universidad 1, Albacete, 02006, España");
             createPO.SetPaymentMethod("CreditCard");
             createPO.SetDates(1, 4); // Today+1 to Today+4 (3 days)
@@ -95,7 +95,7 @@ namespace AppForSEII2526.UIT.RentalDevices
              selectPO.ProceedToRent();
 
              createPO.SetName("Carlos");
-             createPO.SetSurname("García-Fernández");
+             createPO.SetSurname("García Fernández");
              createPO.SetAddress("Calle de la Universidad 1, Albacete, 02006, España");
              createPO.SetPaymentMethod("PayPal");
              createPO.SetDates(1, 4); // 3 days
@@ -126,7 +126,7 @@ namespace AppForSEII2526.UIT.RentalDevices
             selectPO.ProceedToRent();
 
             createPO.SetName("Carlos");
-            createPO.SetSurname("García-Fernández");
+            createPO.SetSurname("García Fernández");
             createPO.SetAddress("Calle de la Universidad 1, Albacete, 02006, España");
             createPO.SetPaymentMethod("Cash");
             createPO.SetDates(1, 4); 
@@ -192,7 +192,7 @@ namespace AppForSEII2526.UIT.RentalDevices
             selectPO.ProceedToRent();
 
             createPO.SetName("Carlos");
-            createPO.SetSurname("García-Fernández");
+            createPO.SetSurname("García Fernández");
             createPO.SetAddress("Calle de la Universidad 1");
             createPO.SetPaymentMethod("CreditCard");
             // Set Invalid Date
@@ -214,7 +214,7 @@ namespace AppForSEII2526.UIT.RentalDevices
             selectPO.ProceedToRent();
 
             createPO.SetName("Carlos");
-            createPO.SetSurname("García-Fernández");
+            createPO.SetSurname("García Fernández");
             createPO.SetAddress("Calle de la Universidad 1");
             createPO.SetPaymentMethod("CreditCard");
             createPO.SetDates(5, 2); // Start T+5, End T+2
