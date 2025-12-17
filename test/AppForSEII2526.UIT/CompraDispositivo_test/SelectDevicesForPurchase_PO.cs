@@ -10,11 +10,11 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
     public class SelectDevicesForPurchase_PO : PageObject
     {
         By inputName = By.Id("inputName");
-        By inputColor = By.Id("selectColor");
+        By inputColor = By.Id("inputColor");
         By buttonSearchDevices = By.Id("searchDevices");
         By tableOfDevicesBy = By.Id("TableOfDevices");
         By errorShownBy = By.Id("ErrorsShown");
-        By buttonPurchaseDevices = By.Id("purchaseDeviceButton");
+        By buttonPurchaseDevices = By.Id("purchaseDevicesButton");
 
         public SelectDevicesForPurchase_PO(IWebDriver driver, ITestOutputHelper output) : base(driver, output)
         {
@@ -69,17 +69,23 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
         }
 
 
-        public void AddDeviceToPurchaseCart(int deviceId)
+        public void AddDeviceToPurchaseCart(string deviceName)
         {
-            WaitForBeingClickable(By.Id("deviceToPurchase_" + deviceId));
-            _driver.FindElement(By.Id("deviceToPurchase_" + deviceId)).Click();
+            var rowId = "DeviceData_" + deviceName;
+            WaitForBeingVisible(By.Id(rowId));
+            
+            var row = _driver.FindElement(By.Id(rowId));
+            var button = row.FindElement(By.TagName("button"));
+            button.Click();
         }
 
 
-        public void RemoveDeviceFromPurchaseCart(int deviceId)
+        public void RemoveDeviceFromPurchaseCart(string deviceName)
         {
-            WaitForBeingClickable(By.Id("removeDevice_" + deviceId));
-            _driver.FindElement(By.Id("removeDevice_" + deviceId)).Click();
+            // The remove button contains "x {deviceName}"
+            var xpath = $"//button[contains(text(), 'x {deviceName}')]";
+            WaitForBeingClickable(By.XPath(xpath));
+            _driver.FindElement(By.XPath(xpath)).Click();
         }
 
 

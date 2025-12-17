@@ -8,18 +8,18 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
     {
         private SelectDevicesForPurchase_PO selectDevicesForPurchase_PO;
         private const int deviceId1 = 1;
-        private const string deviceName1 = "Pixel 8";
-        private const string deviceBrand1 = "Google";
-        private const string deviceModel1 = "Pixel 8";
-        private const string deviceColor1 = "Azul";
-        private const string devicePrice1 = "899";
+        private const string deviceName1 = "iPhone 14";
+        private const string deviceBrand1 = "Apple";
+        private const string deviceModel1 = "iPhone 14";
+        private const string deviceColor1 = "Black";
+        private const string devicePrice1 = "999";
 
         private const int deviceId2 = 2;
-        private const string deviceName2 = "Xiaomi 13";
-        private const string deviceBrand2 = "Xiaomi";
-        private const string deviceModel2 = "Xiaomi 13";
-        private const string deviceColor2 = "Blanco";
-        private const string devicePrice2 = "749";
+        private const string deviceName2 = "Galaxy S23";
+        private const string deviceBrand2 = "Samsung";
+        private const string deviceModel2 = "Galaxy S23";
+        private const string deviceColor2 = "White";
+        private const string devicePrice2 = "899";
 
 
 
@@ -43,14 +43,28 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
           //  Precondition_perform_login();
 
             selectDevicesForPurchase_PO.WaitForBeingVisible(By.Id("CreatePurchase"));
-            _driver.FindElement(By.Id("CreatePurchase")).Click();
+            
+            // Retry logic for StaleElementReferenceException
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    _driver.FindElement(By.Id("CreatePurchase")).Click();
+                    break;
+                }
+                catch (StaleElementReferenceException)
+                {
+                    if (i == 2) throw; // Rethrow if last attempt fails
+                    System.Threading.Thread.Sleep(500); // Small delay before retry
+                }
+            }
         }
 
 
 
         [Theory]
-        [InlineData("Carlos", "Martinez Lopez", "Avenida Castilla 12", "CreditCard")]
-        [InlineData("Carlos", "Martinez Lopez", "Avenida Castilla 12", "PayPal")]
+        [InlineData("jaime.rodriguez7@alu.uclm.es", "Rodriguez de Vera Martinez", "Avenida Castilla 12", "CreditCard")]
+        [InlineData("jaime.rodriguez7@alu.uclm.es", "Rodriguez de Vera Martinez", "Avenida Castilla 12", "PayPal")]
         [Trait("LevelTesting", "Functional Testing")]
         public void CP_01_02_FlujoBasico(string name, string surname, string deliveryAddress, string paymentMethod)
         {
@@ -61,10 +75,10 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
             InitialStepsForPurchase();
 
 
-            selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceId1);
+            selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceName1);
 
 
-            _driver.FindElement(By.Id("purchaseDeviceButton")).Click();
+            _driver.FindElement(By.Id("purchaseDevicesButton")).Click();
 
 
             createPurchase.FillInPurchaseInfo(
@@ -89,11 +103,10 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
             {
                 new string[]
                 {
-                    deviceBrand1,
-                    deviceModel1,
-                    deviceColor1,
-                    devicePrice1 + " €",
-                    "1"
+                    deviceName1,   // Name
+                    deviceBrand1,  // Brand
+                    deviceColor1,  // Color
+                    "2023"         // Year
                 }
             };
 
@@ -153,8 +166,8 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
             InitialStepsForPurchase();
 
 
-            selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceId1);
-            selectDevicesForPurchase_PO.RemoveDeviceFromPurchaseCart(deviceId1);
+            selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceName1);
+            selectDevicesForPurchase_PO.RemoveDeviceFromPurchaseCart(deviceName1);
 
 
             Assert.True(
@@ -181,9 +194,9 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
 
         [Theory]
-        [InlineData("", "Martinez Lopez", "Avenida Castilla 12", "CreditCard", "The CustomerName field is required.")]
-        [InlineData("Carlos", "", "Avenida Castilla 12", "CreditCard", "The CustomerSurname field is required.")]
-        [InlineData("Carlos", "Martinez Lopez", "", "CreditCard", "The DeliveryAddress field is required.")]
+        [InlineData("", "Rodriguez de Vera Martinez", "Avenida Castilla 12", "CreditCard", "The CustomerName field is required.")]
+        [InlineData("jaime.rodriguez7@alu.uclm.es", "", "Avenida Castilla 12", "CreditCard", "The CustomerSurname field is required.")]
+        [InlineData("jaime.rodriguez7@alu.uclm.es", "Rodriguez de Vera Martinez", "", "CreditCard", "The DeliveryAddress field is required.")]
         [Trait("LevelTesting", "Functional Testing")]
         public void CP_9_10_11_12_DatosObligatorios(string name, string surname, string deliveryAddress, string paymentMethod, string expectedError)
         {
@@ -191,7 +204,7 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
             InitialStepsForPurchase();
             var createPurchase = new CreatePurchase_PO(_driver, _output);
 
-            selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceId1);
+            selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceName1);
             _driver.FindElement(By.Id("purchaseDeviceButton")).Click();
 
 
@@ -216,12 +229,12 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
             var createPurchase = new CreatePurchase_PO(_driver, _output);
 
 
-            selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceId1);
+            selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceName1);
             _driver.FindElement(By.Id("purchaseDeviceButton")).Click();
 
             createPurchase.FillInPurchaseInfo(
-                "Carlos",
-                "Martinez Lopez",
+                "jaime.rodriguez7@alu.uclm.es",
+                "Rodriguez de Vera Martinez",
                 "Av. Castilla 12",
                 "CreditCard"
             );
@@ -235,8 +248,8 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
             Assert.True(
                 createPurchase.CheckPurchaseFormData(
-                    "Carlos",
-                    "Martinez Lopez",
+                    "jaime.rodriguez7@alu.uclm.es",
+                    "Rodriguez de Vera Martinez",
                     "Av. Castilla 12",
                     "CreditCard"
                 ),

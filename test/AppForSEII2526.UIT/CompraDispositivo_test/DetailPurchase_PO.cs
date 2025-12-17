@@ -17,9 +17,9 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
             bool result = true;
 
-            result = result && _driver.FindElement(By.Id("Name")).Text.Contains(name);
-
-            result = result && _driver.FindElement(By.Id("Surname")).Text.Contains(surname);
+            var nameSurnameText = _driver.FindElement(By.Id("NameSurname")).Text;
+            result = result && nameSurnameText.Contains(name);
+            result = result && nameSurnameText.Contains(surname);
 
             result = result && _driver.FindElement(By.Id("DeliveryAddress")).Text.Contains(deliveryAddress);
 
