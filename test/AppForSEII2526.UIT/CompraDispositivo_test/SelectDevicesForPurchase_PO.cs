@@ -82,8 +82,10 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
         public void RemoveDeviceFromPurchaseCart(string deviceName)
         {
-            // The remove button contains "x {deviceName}"
-            var xpath = $"//button[contains(text(), 'x {deviceName}')]";
+            System.Threading.Thread.Sleep(1000); // Wait for UI to settle after adding device
+            _output.WriteLine($"Attempting to remove device: {deviceName} using robust locator.");
+            // The remove button contains "x {deviceName}" and starts with "removeDevice_"
+            var xpath = $"//button[starts-with(@id, 'removeDevice_') and contains(., '{deviceName}')]";
             WaitForBeingClickable(By.XPath(xpath));
             _driver.FindElement(By.XPath(xpath)).Click();
         }

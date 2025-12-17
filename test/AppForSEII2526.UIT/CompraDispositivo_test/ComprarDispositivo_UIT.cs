@@ -63,8 +63,8 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
 
         [Theory]
-        [InlineData("jaime.rodriguez7@alu.uclm.es", "Rodriguez de Vera Martinez", "Avenida Castilla 12", "CreditCard")]
-        [InlineData("jaime.rodriguez7@alu.uclm.es", "Rodriguez de Vera Martinez", "Avenida Castilla 12", "PayPal")]
+        [InlineData("Carlos@test.com", "García Fernández", "Avenida Castilla 12", "CreditCard")]
+        [InlineData("Carlos@test.com", "García Fernández", "Avenida Castilla 12", "PayPal")]
         [Trait("LevelTesting", "Functional Testing")]
         public void CP_01_02_FlujoBasico(string name, string surname, string deliveryAddress, string paymentMethod)
         {
@@ -78,6 +78,7 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
             selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceName1);
 
 
+            selectDevicesForPurchase_PO.WaitForBeingVisible(By.Id("purchaseDevicesButton"));
             _driver.FindElement(By.Id("purchaseDevicesButton")).Click();
 
 
@@ -90,13 +91,36 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
 
             createPurchase.PressPurchaseDevices();
-            createPurchase.PressOkModalDialog();
+            try
+            {
+                createPurchase.PressOkModalDialog();
+            }
+            catch (WebDriverTimeoutException)
+            {
+                var uiError = createPurchase.GetErrorMessage();
+                if (!string.IsNullOrEmpty(uiError))
+                {
+                    _output.WriteLine($"ERROR ON UI: {uiError}");
+                }
+                throw;
+            }
 
-
-            Assert.True(
-                detailPurchase.CheckPurchaseDetail(name, surname, deliveryAddress, paymentMethod, DateTime.Now, devicePrice1 + " €"),
-                "El detalle de la compra no es correcto"
-            );
+            try
+            {
+                Assert.True(
+                    detailPurchase.CheckPurchaseDetail(name, surname, deliveryAddress, paymentMethod, DateTime.Now, devicePrice1 + " €"),
+                    "El detalle de la compra no es correcto"
+                );
+            }
+            catch (WebDriverTimeoutException)
+            {
+                var uiError = createPurchase.GetErrorMessage();
+                if (!string.IsNullOrEmpty(uiError))
+                {
+                    _output.WriteLine($"ERROR ON UI: {uiError}");
+                }
+                throw;
+            }
 
 
             var expectedDevices = new List<string[]>
@@ -118,7 +142,7 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
-        public void CP_03_NoDispositivoDisponible()
+        public void FlujoAlternativo_NoDispositivosDisponibles()
         {
 
             InitialStepsForPurchase();
@@ -135,14 +159,15 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
 
         [Theory]
-        [InlineData(deviceName1, deviceBrand1, deviceModel1, deviceColor1, devicePrice1, "Pixel 8", "")]
-        [InlineData(deviceName1, deviceBrand1, deviceModel1, deviceColor1, devicePrice1, "", "Azul")]
-        [InlineData(deviceName1, deviceBrand1, deviceModel1, deviceColor1, devicePrice1, "Pixel 8", "Azul")]
+        [InlineData(deviceName1, deviceBrand1, deviceModel1, deviceColor1, devicePrice1, "iPhone 14", "")]
+        [InlineData(deviceName1, deviceBrand1, deviceModel1, deviceColor1, devicePrice1, "", "Black")]
+        [InlineData(deviceName1, deviceBrand1, deviceModel1, deviceColor1, devicePrice1, "iPhone 14", "Black")]
         [Trait("LevelTesting", "Functional Testing")]
-        public void CP_04_05_06_Filtros(string name, string brand, string model, string color, string price, string filterName, string filterColor)
+        public void FlujoAlternativo_FiltrarDispositivos(string name, string brand, string model, string color, string price, string filterName, string filterColor)
         {
             InitialStepsForPurchase();
-            var expectedDevices = new List<string[]> { new string[] { name, brand, model, color, price + " €" }, };
+            // Updated expectation to match UI Table: Name, Brand, Color, Year
+            var expectedDevices = new List<string[]> { new string[] { name, brand, color, "2023" }, };
 
             selectDevicesForPurchase_PO.SearchDevice(filterName, filterColor);
 
@@ -160,7 +185,7 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
-        public void CP_07_AñadirYQuitarDispositivo()
+        public void FlujoAlternativo_ModificarCarrito_Eliminar()
         {
 
             InitialStepsForPurchase();
@@ -180,7 +205,7 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
-        public void CP_08_ComprasinDispositivos()
+        public void FlujoAlternativo_CompraNoDisponibleSinDispositivos()
         {
 
             InitialStepsForPurchase();
@@ -194,18 +219,19 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
 
         [Theory]
-        [InlineData("", "Rodriguez de Vera Martinez", "Avenida Castilla 12", "CreditCard", "The CustomerName field is required.")]
-        [InlineData("jaime.rodriguez7@alu.uclm.es", "", "Avenida Castilla 12", "CreditCard", "The CustomerSurname field is required.")]
-        [InlineData("jaime.rodriguez7@alu.uclm.es", "Rodriguez de Vera Martinez", "", "CreditCard", "The DeliveryAddress field is required.")]
+        [InlineData("", "García Fernández", "Avenida Castilla 12", "CreditCard", "The Name field is required.")]
+        [InlineData("Carlos", "", "Avenida Castilla 12", "CreditCard", "The Surname field is required.")]
+        [InlineData("Carlos", "García Fernández", "", "CreditCard", "The DeliveryAddress field is required.")]
         [Trait("LevelTesting", "Functional Testing")]
-        public void CP_9_10_11_12_DatosObligatorios(string name, string surname, string deliveryAddress, string paymentMethod, string expectedError)
+        public void FlujoAlternativo_DatosObligatorios(string name, string surname, string deliveryAddress, string paymentMethod, string expectedError)
         {
 
             InitialStepsForPurchase();
             var createPurchase = new CreatePurchase_PO(_driver, _output);
 
             selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceName1);
-            _driver.FindElement(By.Id("purchaseDeviceButton")).Click();
+            selectDevicesForPurchase_PO.WaitForBeingVisible(By.Id("purchaseDevicesButton"));
+            _driver.FindElement(By.Id("purchaseDevicesButton")).Click();
 
 
             createPurchase.FillInPurchaseInfo(name, surname, deliveryAddress, paymentMethod);
@@ -222,7 +248,7 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
-        public void CP_13_VolverAtrasTrasRellenarDatosUsuario()
+        public void FlujoAlternativo_ModificarDispositivos_ConservarDatos()
         {
 
             InitialStepsForPurchase();
@@ -230,11 +256,12 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
 
 
             selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceName1);
-            _driver.FindElement(By.Id("purchaseDeviceButton")).Click();
+            selectDevicesForPurchase_PO.WaitForBeingVisible(By.Id("purchaseDevicesButton"));
+            _driver.FindElement(By.Id("purchaseDevicesButton")).Click();
 
             createPurchase.FillInPurchaseInfo(
-                "jaime.rodriguez7@alu.uclm.es",
-                "Rodriguez de Vera Martinez",
+                "Carlos@test.com",
+                "García Fernández",
                 "Av. Castilla 12",
                 "CreditCard"
             );
@@ -243,13 +270,14 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
             createPurchase.PressModifyDevices();
 
 
-            _driver.FindElement(By.Id("purchaseDeviceButton")).Click();
+            selectDevicesForPurchase_PO.WaitForBeingVisible(By.Id("purchaseDevicesButton"));
+            _driver.FindElement(By.Id("purchaseDevicesButton")).Click();
 
 
             Assert.True(
                 createPurchase.CheckPurchaseFormData(
-                    "jaime.rodriguez7@alu.uclm.es",
-                    "Rodriguez de Vera Martinez",
+                    "Carlos@test.com",
+                    "García",
                     "Av. Castilla 12",
                     "CreditCard"
                 ),

@@ -79,5 +79,19 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
             return result;
         }
 
+        public string GetErrorMessage()
+        {
+            try 
+            {
+                var errorElement = _driver.FindElement(By.Id("ErrorsShown"));
+                if (errorElement.Displayed)
+                {
+                    return errorElement.Text;
+                }
+            }
+            catch (NoSuchElementException) { }
+            return string.Empty;
+        }
+
     }
 }
