@@ -38,7 +38,7 @@ else
     </table>
     <h4>Rented Devices</h4>
 
-    <table class="table" id="RentedDevicees">
+    <table class="table" id="RentedDevices">
         <thead>
             <tr>
                 <th scope="col">Model</th>
@@ -49,7 +49,7 @@ else
         <tbody>
             @foreach (RentalDeviceDTO device in rental.RentalDevices)
             {
-                <tr id="RentalDevice_@device.Model">
+                <tr id="RentalDevice_@device.Model.Replace(" ", "_")">
                     <td>@device.Model</td>
                     <td>@device.PriceForRent €</td>
                     @* <td>@device.Quantity</td> *@

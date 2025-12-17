@@ -58,12 +58,12 @@
                                 <tbody>
                                     @foreach (var device in devices)
                                     {
-                                        <tr id="DeviceData_@device.Name">
+                                        <tr id="DeviceData_@device.Name.Replace(" ", "_")">
                                             <td>@device.Name</td>
                                             <td>@device.Model</td>
                                             <td>@device.PriceForRent</td>
                                             <td>
-                                                <button class="btn btn-outline-secondary" id="deviceToRent_@device.Name" @onclick="@(() => AddDevice(device))">Add</button>
+                                                <button class="btn btn-outline-secondary" id="deviceToRent_@device.Name.Replace(" ", "_")" @onclick="@(() => AddDevice(device))">Add</button>
                                             </td>
                                         </tr>
                                     }
@@ -80,7 +80,7 @@
                 @foreach (RentalDeviceDTO device in rental.RentalDevices)
                 {
                     <div class="row">
-                        <button type="button" class="btn btn-light" id="removeDevice_@device.Name" @onclick="@(() => RemoveRentalDevice(device))">x @device.Name - @device.PriceForRent€</button>
+                        <button type="button" class="btn btn-light" id="removeDevice_@device.Name.Replace(" ", "_")" @onclick="@(() => RemoveRentalDevice(device))">x @device.Name - @device.PriceForRent€</button>
                     </div>
                 }
                 <div class="row">
@@ -101,11 +101,21 @@
 
     private RentalForCreateDTO rental => rentalState.Rental;
 
+    // We change default to false if we want it visible when items exist. 
+    // Logic above: hidden="@hideRentingCart" (count==0).
+    // The boolean variable 'hiddenRentingCart' below seems unused in the HTML logic (it uses the property hideRentingCart).
+    // But let's leave it as is or remove it if unused. It was used in RemoveRentalDevice but the property 'hideRentingCart' handles visibility.
     private bool hiddenRentingCart = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SearchDevices();
+    }
 
     private void AddDevice(DeviceForRentalDTO device)
     {
         rentalState.AddDeviceToRental(device);
+        StateHasChanged();
     }
 
     private void RemoveRentalDevice(RentalDeviceDTO device)
@@ -114,16 +124,27 @@
         if (rental.RentalDevices.Count == 0) hiddenRentingCart = true;
     }
 
-    public async void SearchDevices()
+    public async Task SearchDevices()
     {
         try
         {
+            devices = null;
             devices = await apiclient.GetDevicesForRentalAsync(deviceModel, devicePrice);
+            if (devices != null && devices.Count == 0) errors = "There are no devices available";
+            else errors = ""; // Clear errors if success
         }
+
         catch (ApiException ex)
         {
             logger.LogError($"{DateTime.Now} Error: {ex}");
             errors = "Error while connecting to the system";
+            devices = new List<DeviceForRentalDTO>();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"{DateTime.Now} Error: {ex}");
+            errors = "Unknown error";
+            devices = new List<DeviceForRentalDTO>();
         }
         StateHasChanged();
     }
