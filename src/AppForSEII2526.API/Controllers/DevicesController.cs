@@ -34,7 +34,7 @@ namespace AppForSEII2526.API.Controllers
         public async Task<ActionResult> GetDevicesForRental(string? filtroModel, double? filtroPrice)
         {
             var devices = await _context.Device
-                .Where(d => (string.IsNullOrEmpty(filtroModel) || d.Name.Contains(filtroModel) || d.Model.NameModel.Contains(filtroModel)) 
+                .Where(d => (string.IsNullOrEmpty(filtroModel) || d.Name.Contains(filtroModel) || d.Model.NameModel.Contains(filtroModel) || d.Brand.Contains(filtroModel)) 
                             && (filtroPrice == null || d.PriceForRent <= filtroPrice))
                 .Select(d => new DeviceForRentalDTO(d.Id, d.Name, d.Brand, d.Color, d.Year, d.Model.NameModel, d.PriceForRent))
                 .ToListAsync();
