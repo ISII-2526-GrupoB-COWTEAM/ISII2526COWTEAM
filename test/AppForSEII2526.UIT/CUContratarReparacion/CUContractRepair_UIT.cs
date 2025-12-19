@@ -1,3 +1,4 @@
+using AppForSEII2526.UIT.CU_CompraDispositivo;
 using AppForSEII2526.UIT.Shared;
 using OpenQA.Selenium;
 using System;
@@ -242,5 +243,61 @@ namespace AppForSEII2526.UIT.CUContratarReparacion
             // System stays on form (Title still visible)
             Assert.Contains("Contract Repair", _driver.PageSource); 
         }
-    }
+
+
+
+
+
+
+        [Fact]
+        public void sprint3()
+        {
+            var selectPO = new SelectRepairsForReceipt_PO(_driver, _output);
+            var createPO = new CreateRepair_PO(_driver, _output);
+            var detailPO = new DetailReceipt_PO(_driver, _output);
+
+            InitialNavigation();
+
+            
+            selectPO.SelectRepairs(new List<string> { "Screen repair" });
+            selectPO.FilterRepairs(null, "Low");
+
+            
+            
+            selectPO.SelectRepairs(new List<string> { "Battery repair" });
+            Thread.Sleep(500);
+            selectPO.RemoveRepairFromCart("Screen repair");
+
+
+            selectPO.ProceedToContract();
+
+
+            createPO.SetName("Carlos");
+            createPO.SetSurname("García");
+            createPO.SetAddress("Calle Luna 7");
+            createPO.SetPaymentMethod("CreditCard");
+            Thread.Sleep(5000);
+           
+            createPO.SetModelByIndex(0, "Samsung Galaxy S23");
+            
+
+            createPO.SubmitContract();
+            Thread.Sleep(5000);
+
+            var expectedItems = new List<string[]> {
+                new string[] { "Battery repair", "Low", "Samsung Galaxy S23", "80 €" }
+            };
+
+            Assert.True(detailPO.CheckReceiptItems(expectedItems));
+            Assert.Contains("80", _driver.PageSource); 
+            Assert.Contains("Carlos", _driver.PageSource);
+            Assert.Contains("Luna 7", _driver.PageSource);
+        }
+
+
+
+
+
+
+        }
 }
