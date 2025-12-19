@@ -323,5 +323,37 @@ namespace AppForSEII2526.UIT.RentalDevices
              selectPO.FilterDevices("NonExistentXYZ", null);
              Assert.Contains("no devices available", _driver.PageSource);
         }
+        [Fact]
+        public void UC2_14_Sprint3()
+        {
+            var selectPO = new SelectDevicesForRental_PO(_driver, _output);
+            var createPO = new CreateRental_PO(_driver, _output);
+            var detailPO = new DetailRental_PO(_driver, _output);
+
+            InitialNavigation();
+
+            selectPO.SelectDevices(new List<string> { "Galaxy S23" });
+
+            selectPO.FilterDevices("iPhone", null);
+
+            selectPO.SelectDevices(new List<string> { "iPhone 14" });
+
+
+            selectPO.RemoveDeviceFromCart("Galaxy S23");
+
+            selectPO.ProceedToRent();
+
+            createPO.SetName("Carlos");
+            createPO.SetSurname("García Fernández");
+            createPO.SetAddress("Calle de la Universidad 1, Albacete, 02006, España");
+            createPO.SetPaymentMethod("Cash");
+            createPO.SetDates(1, 4);
+
+            createPO.SubmitRental();
+
+            Assert.Contains("iPhone 14", _driver.PageSource);
+            Assert.DoesNotContain("Galaxy S23", _driver.PageSource);
+            Assert.True(detailPO.CheckRentalInfo("Carlos", "Calle de la Universidad 1", "Cash"));
+        }
     }
 }
