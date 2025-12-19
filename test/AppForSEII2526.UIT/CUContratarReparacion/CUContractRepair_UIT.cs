@@ -258,12 +258,12 @@ namespace AppForSEII2526.UIT.CUContratarReparacion
 
             InitialNavigation();
 
-            // 1. Select Repairs
+            
             selectPO.SelectRepairs(new List<string> { "Screen repair" });
             selectPO.FilterRepairs(null, "Low");
 
             
-            // Select
+            
             selectPO.SelectRepairs(new List<string> { "Battery repair" });
             Thread.Sleep(500);
             selectPO.RemoveRepairFromCart("Screen repair");
@@ -272,27 +272,24 @@ namespace AppForSEII2526.UIT.CUContratarReparacion
             selectPO.ProceedToContract();
 
 
-            // 2. Fill Data
             createPO.SetName("Carlos");
             createPO.SetSurname("García");
             createPO.SetAddress("Calle Luna 7");
             createPO.SetPaymentMethod("CreditCard");
-
+            Thread.Sleep(5000);
            
             createPO.SetModelByIndex(0, "Samsung Galaxy S23");
             
 
             createPO.SubmitContract();
+            Thread.Sleep(5000);
 
-            // 3. Validate Receipt
-            // Expected: Carlos García, Calle Luna 7, Total 130€
-            // Razor DetailPrint: @item.Cost € (With space)
             var expectedItems = new List<string[]> {
                 new string[] { "Battery repair", "Low", "Samsung Galaxy S23", "80 €" }
             };
 
             Assert.True(detailPO.CheckReceiptItems(expectedItems));
-            Assert.Contains("80", _driver.PageSource); // Total Check (Flexible for 130 or 130,00)
+            Assert.Contains("80", _driver.PageSource); 
             Assert.Contains("Carlos", _driver.PageSource);
             Assert.Contains("Luna 7", _driver.PageSource);
         }
