@@ -1,4 +1,5 @@
 ﻿using AppForMovies.UIT.Shared;
+using AppForSEII2526.UIT.CUHacerReseñas;
 
 
 namespace AppForSEII2526.UIT.CU_CompraDispositivo
@@ -284,6 +285,97 @@ namespace AppForSEII2526.UIT.CU_CompraDispositivo
                 "Los datos del usuario deberían mantenerse al volver al formulario"
             );
         }
+
+        [Fact]
+        [Trait("LevelTesting", "Functional Testing")]
+        public void EVALUACIÓN_SPRINT3()
+        {
+            
+
+            var createPurchase = new CreatePurchase_PO(_driver, _output);
+            var detailPurchase = new DetailPurchase_PO(_driver, _output);
+
+            InitialStepsForPurchase();
+
+            
+            selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceName1);
+
+            selectDevicesForPurchase_PO.SearchDevice("", deviceColor2);
+            selectDevicesForPurchase_PO.AddDeviceToPurchaseCart(deviceName2);
+                        
+            selectDevicesForPurchase_PO.RemoveDeviceFromPurchaseCart(deviceName1);
+                        
+            selectDevicesForPurchase_PO.WaitForBeingVisible(By.Id("purchaseDevicesButton"));
+            _driver.FindElement(By.Id("purchaseDevicesButton")).Click();
+
+            
+            createPurchase.FillInPurchaseInfo(
+                "Carlos@test.com",
+                "García Fernández",
+                "Avenida Castilla 12",
+                "CreditCard"
+            );
+
+            
+            createPurchase.PressPurchaseDevices();
+
+            try
+            {
+                createPurchase.PressOkModalDialog();
+            }
+            catch (WebDriverTimeoutException)
+            {
+                var uiError = createPurchase.GetErrorMessage();
+                if (!string.IsNullOrEmpty(uiError))
+                {
+                    _output.WriteLine($"ERROR ON UI: {uiError}");
+                }
+                throw;
+            }
+
+            
+            try
+            {
+                Assert.True(
+                    detailPurchase.CheckPurchaseDetail(
+                        "Carlos@test.com",
+                        "García Fernández",
+                        "Avenida Castilla 12",
+                        "CreditCard",
+                        DateTime.Now,
+                        devicePrice2 + " €"
+                    ),
+                    "El detalle de la compra no es correcto"
+                );
+            }
+            catch (WebDriverTimeoutException)
+            {
+                var uiError = createPurchase.GetErrorMessage();
+                if (!string.IsNullOrEmpty(uiError))
+                {
+                    _output.WriteLine($"ERROR ON UI: {uiError}");
+                }
+                throw;
+            }
+
+            
+            var expectedDevices = new List<string[]>
+            {
+                new string[]
+                {
+                    deviceName2,   
+                    deviceBrand2,  
+                    deviceColor2,  
+                    "2023"         
+                }
+            };
+
+            Assert.True(
+                detailPurchase.CheckListOfPurchasedDevices(expectedDevices),
+                "Los dispositivos comprados no son correctos"
+            );
+        }
+
 
 
 

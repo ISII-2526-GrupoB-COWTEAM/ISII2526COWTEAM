@@ -86,8 +86,8 @@ namespace AppForSEII2526.API.Controllers
                     ModelState.AddModelError("PurchaseDevices", "Error! You must purchase at least one device");
 
             // REEVALUACION SPRINT 2 ----------------------------------------------------------------------------------------
-                if (purchaseForCreate.PaymentMethod == PaymentMethodTypes.PayPal)
-                    ModelState.AddModelError("PaymentMethod", "¡Error! Solo aceptamos compras pagadas con Tarjeta de Crédito");
+            //    if (purchaseForCreate.PaymentMethod == PaymentMethodTypes.PayPal)
+            //        ModelState.AddModelError("PaymentMethod", "¡Error! Solo aceptamos compras pagadas con Tarjeta de Crédito");
             //---------------------------------------------------------------------------------------------------------------
 
             if (purchaseForCreate.PurchaseDate > DateTime.Today.AddDays(1))
