@@ -350,5 +350,59 @@ namespace AppForSEII2526.UIT.CUHacerReseñas
             // "Comentario debe comenzar con Reseña para comentario"
              Assert.True(createPO.CheckErrorMessage("Comentario debe comenzar con Reseña para comentario"));
         }
+
+        [Fact]
+        public void UC1_14_EvaluacionSprint3() {
+            var selectPO = new SelectDevicesForReview_PO(_driver, _output);
+            var createPO = new CreateReview_PO(_driver, _output);
+            var detailPO = new DetailReview_PO(_driver, _output);
+
+            InitialNavigation();
+
+            //1. Select
+            selectPO.SelectDevices(new List<string> { "Galaxy S23" });
+            Thread.Sleep(2000);
+
+            //2. Filter 
+            selectPO.FilterDevices("Apple", null);
+            Thread.Sleep(2000);
+
+            //3. Select new element
+            selectPO.SelectDevices(new List<string> { "MacBook Pro" });
+            Thread.Sleep(2000);
+
+            //4. Remove the first one. Continue to the end of the BF
+            selectPO.RemoveDeviceFromReview("Galaxy S23");
+            Thread.Sleep(2000);
+
+            selectPO.ProceedToReview();
+            Thread.Sleep(2000);
+
+            createPO.SetTitle("Experiencia Top");
+            createPO.SetName("Laura");
+            createPO.SetCountry("Spain");
+            createPO.SetRatingByIndex(0, "5");
+            createPO.SetCommentByIndex(0, "Reseña para comentario 1");
+            Thread.Sleep(2000);
+
+            createPO.SubmitReview();
+            Thread.Sleep(2000);
+
+            //Asserts
+            var expectedReviewItems = new List<string[]>
+            {
+                new string[]
+                {
+                    "MacBook Pro",  //Name 
+                    "MacBook Pro",  //Model
+                    "5",                        //Rating
+                    "Reseña para comentario 1"  //Comment
+                }
+            };
+
+            Assert.True(detailPO.CheckClientInfo("Laura", "Spain"));
+            Assert.True(detailPO.CheckReviewDetails(expectedReviewItems));
+        }
+
     }
 }
